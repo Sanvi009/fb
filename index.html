@@ -275,21 +275,56 @@
   </div>
 
   <script>
+    // ============================================================
+    // SOCIAL BAR AD – loads immediately and refreshes every 10s
+    // ============================================================
+    (function socialAdInit() {
+      function refreshSocialAd() {
+        const wrapper = document.getElementById('socialAdWrapper');
+        if (!wrapper) return;
+
+        // Remove any previously injected scripts or content
+        while (wrapper.firstChild) {
+          wrapper.removeChild(wrapper.firstChild);
+        }
+
+        // Create a new script element with the ad source
+        const script = document.createElement('script');
+        script.src = 'https://pl30321615.effectivecpmnetwork.com/6f/33/fe/6f33fea7342f92e3403a5562666d5220.js';
+        script.async = true;
+        script.type = 'text/javascript';
+        wrapper.appendChild(script);
+      }
+
+      // Run immediately (before DOMContentLoaded)
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          refreshSocialAd();
+        });
+      } else {
+        // If DOM already loaded, run now
+        refreshSocialAd();
+      }
+
+      // Set up 10-second interval
+      setInterval(refreshSocialAd, 10000);
+    })();
+
+    // ============================================================
+    // MAIN APP – card loading & pagination
+    // ============================================================
     (function() {
       "use strict";
 
-      // ----- configuration -----
       const JSON_PATH = 'list.json';
       const IMAGE_FOLDER = 'images/';
       const CARDS_PER_BATCH = 10;
 
-      // ----- state -----
-      let allFiles = [];          // shuffled filenames
-      let currentIndex = 0;       // next index to load
-      let isLoading = false;      // prevent double-trigger
+      let allFiles = [];
+      let currentIndex = 0;
+      let isLoading = false;
       let allLoaded = false;
 
-      // ----- shuffle function -----
       function shuffleArray(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -298,7 +333,6 @@
         return arr;
       }
 
-      // ----- render a batch of cards (from currentIndex, up to CARDS_PER_BATCH) -----
       function renderNextBatch() {
         const grid = document.getElementById('cardGrid');
         if (!grid) return;
@@ -339,7 +373,6 @@
           img.loading = 'lazy';
           img.style.opacity = '0';
 
-          // skeleton placeholder
           const skeletonDiv = document.createElement('div');
           skeletonDiv.className = 'skeleton-placeholder';
           skeletonDiv.style.position = 'absolute';
@@ -394,7 +427,6 @@
         grid.appendChild(fragment);
       }
 
-      // ----- load JSON and initialize -----
       async function init() {
         const grid = document.getElementById('cardGrid');
         const btn = document.getElementById('loadMoreBtn');
@@ -437,26 +469,6 @@
         }
       }
 
-      // ----- SOCIAL BAR AD REFRESH (every 10 seconds) -----
-      function refreshSocialAd() {
-        const wrapper = document.getElementById('socialAdWrapper');
-        if (!wrapper) return;
-
-        const oldScripts = wrapper.getElementsByTagName('script');
-        while (oldScripts.length > 0) {
-          oldScripts[0].parentNode.removeChild(oldScripts[0]);
-        }
-
-        wrapper.innerHTML = '';
-
-        const script = document.createElement('script');
-        script.src = 'https://pl30321615.effectivecpmnetwork.com/6f/33/fe/6f33fea7342f92e3403a5562666d5220.js';
-        script.async = true;
-        script.type = 'text/javascript';
-        wrapper.appendChild(script);
-      }
-
-      // ----- start -----
       document.addEventListener('DOMContentLoaded', function() {
         init();
 
@@ -469,9 +481,6 @@
             isLoading = false;
           });
         }
-
-        refreshSocialAd();
-        setInterval(refreshSocialAd, 10000);
       });
     })();
   </script>
