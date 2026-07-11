@@ -223,25 +223,7 @@
       border-radius: 12px;
     }
 
-    /* Social bar ad container - minimal */
-    .social-bar-container {
-      width: 100%;
-      max-width: 840px;
-      margin: 1.5rem auto 0.5rem;
-      padding: 0.2rem 0;
-      text-align: center;
-    }
-    
-    .social-bar-container > div {
-      display: inline-block;
-      width: 100%;
-      max-width: 728px;
-      min-height: 60px;
-      background: #131313;
-      border-radius: 8px;
-      border: 1px solid #222;
-      overflow: hidden;
-    }
+    /* (ad container removed) */
   </style>
 </head>
 <body>
@@ -257,44 +239,9 @@
     <button class="load-more-btn" id="loadMoreBtn">Load More</button>
   </div>
 
-  <!-- SOCIAL BAR AD CONTAINER -->
-  <div class="social-bar-container" id="socialBarContainer">
-    <div id="socialAdWrapper">
-      <!-- The ad script will inject content here -->
-    </div>
-  </div>
+  <!-- (ad container removed) -->
 
   <script>
-    // ============================================================
-    // SOCIAL BAR AD – loads immediately and refreshes every 10s
-    // ============================================================
-    (function socialAdInit() {
-      function refreshSocialAd() {
-        const wrapper = document.getElementById('socialAdWrapper');
-        if (!wrapper) return;
-
-        while (wrapper.firstChild) {
-          wrapper.removeChild(wrapper.firstChild);
-        }
-
-        const script = document.createElement('script');
-        script.src = 'https://pl30321615.effectivecpmnetwork.com/6f/33/fe/6f33fea7342f92e3403a5562666d5220.js';
-        script.async = true;
-        script.type = 'text/javascript';
-        wrapper.appendChild(script);
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-          refreshSocialAd();
-        });
-      } else {
-        refreshSocialAd();
-      }
-
-      setInterval(refreshSocialAd, 10000);
-    })();
-
     // ============================================================
     // MAIN APP – card loading & pagination (16:9, 1 per row)
     // ============================================================
@@ -470,6 +417,8 @@
       });
     })();
   </script>
+  <script src="https://pl30321615.effectivecpmnetwork.com/6f/33/fe/6f33fea7342f92e3403a5562666d5220.js"></script>
+
 
 </body>
 </html>
