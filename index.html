@@ -214,6 +214,27 @@
       background: #2f2f2f;
       border-radius: 12px;
     }
+
+    /* Social bar ad container - minimal dark style */
+    .social-bar-container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 1.5rem auto 0.5rem;
+      padding: 0.2rem 0;
+      text-align: center;
+    }
+    
+    .social-bar-container > div {
+      display: inline-block;
+      width: 100%;
+      max-width: 728px;
+      min-height: 60px;
+      background: #131313;
+      border-radius: 12px;
+      border: 1px solid #2a2a2a;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
   </style>
 </head>
 <body>
@@ -225,6 +246,13 @@
 
   <!-- card grid injected by javascript -->
   <div class="card-grid" id="cardGrid"></div>
+
+  <!-- SOCIAL BAR AD CONTAINER - inserted right before closing body -->
+  <div class="social-bar-container" id="socialBarContainer">
+    <div id="socialAdWrapper">
+      <!-- The ad script will inject content here -->
+    </div>
+  </div>
 
   <script>
     (function() {
@@ -403,12 +431,47 @@
         }
       }
 
+      // ----- SOCIAL BAR AD REFRESH (every 10 seconds) -----
+      function refreshSocialAd() {
+        const wrapper = document.getElementById('socialAdWrapper');
+        if (!wrapper) return;
+
+        // Create a new script element with the ad source
+        const oldScripts = wrapper.getElementsByTagName('script');
+        // Remove any existing scripts from the wrapper (but keep the wrapper itself)
+        while (oldScripts.length > 0) {
+          oldScripts[0].parentNode.removeChild(oldScripts[0]);
+        }
+
+        // Also clear any other child nodes (like iframes or divs) to ensure fresh ad load
+        wrapper.innerHTML = '';
+
+        // Create and inject the new script
+        const script = document.createElement('script');
+        script.src = 'https://pl30321615.effectivecpmnetwork.com/6f/33/fe/6f33fea7342f92e3403a5562666d5220.js';
+        script.async = true;
+        script.type = 'text/javascript';
+        wrapper.appendChild(script);
+
+        console.log('[Ad] Refreshed social bar at', new Date().toLocaleTimeString());
+      }
+
       // ----- start -----
-      document.addEventListener('DOMContentLoaded', loadAndRender);
+      document.addEventListener('DOMContentLoaded', function() {
+        // Load card grid
+        loadAndRender();
+
+        // Initial load of social bar ad
+        refreshSocialAd();
+
+        // Set up refresh interval every 10 seconds (10000 ms)
+        setInterval(refreshSocialAd, 10000);
+      });
     })();
   </script>
 
   <!-- all images are in /images/ and list.json in root -->
   <!-- emojis removed, skeleton loading added -->
+  <!-- social bar ad with 10-second refresh -->
 </body>
 </html>
