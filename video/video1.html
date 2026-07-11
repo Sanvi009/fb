@@ -88,17 +88,40 @@
       width: 100%;
       height: 100%;
       background: #000;
-      object-fit: contain; /* This ensures letterboxing for 9:16 videos */
+      object-fit: contain;
       display: block;
+      /* Brightness boost - makes video pop */
+      filter: brightness(1.05) contrast(1.02);
+      /* Optional: slight saturation boost */
+      /* filter: brightness(1.08) contrast(1.05) saturate(1.05); */
     }
 
-    /* Custom video controls - minimal YouTube style */
+    /* Cleaner, lighter controls */
     .video-container video::-webkit-media-controls {
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.4) !important;
     }
 
     .video-container video::-webkit-media-controls-panel {
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .video-container video::-webkit-media-controls-play-button {
+      background: rgba(255, 255, 255, 0.15) !important;
+      border-radius: 50% !important;
+    }
+
+    .video-container video::-webkit-media-controls-play-button:hover {
+      background: rgba(255, 255, 255, 0.25) !important;
+    }
+
+    .video-container video::-webkit-media-controls-current-time-display,
+    .video-container video::-webkit-media-controls-time-remaining-display {
+      color: #fff !important;
+    }
+
+    /* Firefox controls */
+    .video-container video::-moz-media-controls {
+      background: rgba(0, 0, 0, 0.4) !important;
     }
 
     /* Empty space below */
