@@ -1,1 +1,326 @@
-hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>shuffle · cards</title>
+  <style>
+    /* reset & base – full black */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0b0b0b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      color: #eee;
+      padding: 0 1rem 1.5rem;
+    }
+
+    /* nav bar – minimal, black, only text */
+    .nav-bar {
+      width: 100%;
+      padding: 1rem 0.5rem 0.75rem;
+      background: transparent;
+      border-bottom: 1px solid #1f1f1f;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-bar span {
+      font-size: 1.6rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: #f0f0f0;
+      background: #1a1a1a;
+      padding: 0.2rem 1.2rem 0.3rem;
+      border-radius: 40px;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.02);
+      text-transform: lowercase;
+      backdrop-filter: blur(2px);
+      border: 1px solid #2a2a2a;
+    }
+
+    /* main grid — responsive, cards 5:4 */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1.2rem;
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.2rem 0 1rem;
+    }
+
+    /* card – 5:4 ratio, dark surface, emoji only */
+    .card {
+      background: #131313;
+      border-radius: 20px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7), 0 0 0 1px #262626 inset;
+      aspect-ratio: 5 / 4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s ease, box-shadow 0.2s;
+      padding: 0.5rem;
+      min-height: 0;
+      width: 100%;
+      border: none;
+      position: relative;
+      backdrop-filter: blur(2px);
+      overflow: hidden;
+    }
+
+    /* image inside – fills the card, smooth */
+    .card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+      background: #0f0f0f;
+      transition: opacity 0.2s;
+      box-shadow: 0 0 0 1px #2b2b2b inset;
+    }
+
+    /* emoji overlay – on top of image, subtle, centered */
+    .card-emoji {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      font-size: 2.8rem;
+      line-height: 1;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.9), 0 0 12px #000000;
+      color: rgba(255, 255, 255, 0.9);
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,240,0.02), transparent 70%);
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+      font-weight: 300;
+      opacity: 0.95;
+      mix-blend-mode: soft-light;
+    }
+
+    /* fallback if image fails: show emoji on dark bg */
+    .card .fallback-emoji {
+      font-size: 3.2rem;
+      color: #f0f0f0;
+      text-shadow: 0 0 10px #222;
+      background: #1b1b1b;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      background: #181818;
+      pointer-events: none;
+    }
+
+    /* hide emoji if image loads, but we keep both (emoji as overlay) */
+    .card img.loaded + .card-emoji {
+      opacity: 0.6;
+      mix-blend-mode: overlay;
+      color: #fff;
+    }
+
+    /* loading / empty state – nothing extra */
+    .card img:not([src]) {
+      opacity: 0;
+    }
+
+    /* responsive tweaks */
+    @media (max-width: 600px) {
+      .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 0.9rem;
+      }
+      .nav-bar span {
+        font-size: 1.4rem;
+        padding: 0.15rem 1rem;
+      }
+      .card-emoji {
+        font-size: 2.2rem;
+      }
+    }
+
+    @media (min-width: 1000px) {
+      .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 1.6rem;
+      }
+      .card-emoji {
+        font-size: 3.4rem;
+      }
+    }
+
+    /* accessibility & touch */
+    .card:active {
+      transform: scale(0.98);
+    }
+
+    /* scrollbar – dark */
+    ::-webkit-scrollbar {
+      width: 8px;
+      background: #121212;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2f2f2f;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- nav bar: only text "videos" (or nothing) -->
+  <nav class="nav-bar">
+    <span>videos</span>
+    <!-- you could also remove the span for "nothing" – but we keep minimal text -->
+  </nav>
+
+  <!-- card grid injected by javascript -->
+  <div class="card-grid" id="cardGrid"></div>
+
+  <script>
+    (function() {
+      "use strict";
+
+      // ----- configuration -----
+      const JSON_PATH = 'list.json';          // root relative
+      const IMAGE_FOLDER = 'images/';         // root/images/
+      // fallback emoji set – each card gets one random emoji
+      const EMOJI_SET = [
+        '🌀', '🌊', '🔥', '💫', '✨', '🌙', '☀️', '⭐', '🌍', '🌈',
+        '🎬', '📽️', '🎞️', '📀', '💿', '🎧', '🎼', '🎵', '🎶', '🔊',
+        '👾', '🤖', '👽', '🛸', '🧩', '🎲', '♟️', '🎯', '🏆', '🥇',
+        '💎', '🔮', '🕯️', '🧿', '🪬', '🌸', '🌺', '🍀', '🌿', '🍂'
+      ];
+
+      // ----- shuffle function (Fisher–Yates) -----
+      function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      // ----- load JSON and render shuffled cards -----
+      async function loadAndRender() {
+        const grid = document.getElementById('cardGrid');
+        if (!grid) return;
+
+        try {
+          const response = await fetch(JSON_PATH);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status} – ${response.statusText}`);
+          }
+          const data = await response.json();
+
+          // data is an object: { "1": "1.jpg", "2": "2.jpg", ... }
+          // extract values (filenames) in any order
+          const entries = Object.values(data);
+          if (!entries || entries.length === 0) {
+            grid.innerHTML = `<p style="color: #666; padding: 2rem;">no images found</p>`;
+            return;
+          }
+
+          // shuffle the list of filenames (full shuffle)
+          const shuffledFiles = shuffleArray([...entries]);
+
+          // pre-assign a random emoji for each card (so it's consistent)
+          const getRandomEmoji = () => EMOJI_SET[Math.floor(Math.random() * EMOJI_SET.length)];
+
+          // build card html
+          let html = '';
+          for (let i = 0; i < shuffledFiles.length; i++) {
+            const filename = shuffledFiles[i];
+            // clean filename – just in case
+            const cleanName = filename.trim();
+            // image path: images/ + filename
+            const imagePath = IMAGE_FOLDER + cleanName;
+            // pick a random emoji for this card
+            const emoji = getRandomEmoji();
+
+            // create card with image + emoji overlay
+            html += `
+              <div class="card">
+                <img src="${imagePath}" alt="${cleanName}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.opacity='1';">
+                <div class="card-emoji">${emoji}</div>
+              </div>
+            `;
+          }
+
+          grid.innerHTML = html;
+
+          // optional: after load, adjust emoji visibility if image loaded
+          // we use 'load' event to add a class, but onerror already handled.
+          // we also set fallback: if image fails, emoji becomes prominent.
+          // we already handle with onerror: hide image, show emoji (opacity)
+          // but we want emoji to be visible even if image loads – we keep it as overlay.
+          // fine-tune: if image loads, we keep emoji as soft overlay.
+          // we add a small class for loaded images (but not necessary)
+          const images = grid.querySelectorAll('.card img');
+          images.forEach(img => {
+            img.addEventListener('load', function() {
+              // image loaded, emoji stays as soft overlay (default)
+              // we can add class 'loaded' but we already use css
+              this.classList.add('loaded');
+              // ensure emoji sibling is visible
+              const emojiDiv = this.nextElementSibling;
+              if (emojiDiv && emojiDiv.classList.contains('card-emoji')) {
+                emojiDiv.style.opacity = '0.7';
+                emojiDiv.style.mixBlendMode = 'overlay';
+              }
+            });
+            // if image fails, we already have onerror inline: hide img, show emoji
+            // but we also want to set emoji fully visible.
+            // onerror fires, we set display none on img, and we set emoji opacity to 1.
+            // we defined onerror inline. But we also add a listener for safety.
+            img.addEventListener('error', function() {
+              this.style.display = 'none';
+              const emojiDiv = this.nextElementSibling;
+              if (emojiDiv && emojiDiv.classList.contains('card-emoji')) {
+                emojiDiv.style.opacity = '1';
+                emojiDiv.style.mixBlendMode = 'normal';
+                emojiDiv.style.color = '#f5f5f5';
+                emojiDiv.style.textShadow = '0 0 20px #000, 0 0 8px #0a0a0a';
+              }
+            });
+          });
+
+        } catch (error) {
+          console.error('Failed to load list.json:', error);
+          grid.innerHTML = `
+            <div style="grid-column:1/-1; padding: 3rem 1rem; text-align: center; color: #888;">
+              <p style="font-size: 1.3rem; background: #181818; padding: 1rem 2rem; border-radius: 48px; display: inline-block; border: 1px solid #2a2a2a;">
+                ⚡ couldn't load list.json
+              </p>
+              <p style="margin-top: 0.8rem; font-size: 0.9rem; opacity: 0.6;">check console for details</p>
+            </div>
+          `;
+        }
+      }
+
+      // ----- start -----
+      document.addEventListener('DOMContentLoaded', loadAndRender);
+    })();
+  </script>
+
+  <!-- note: if json fails, fallback shows error; images folder from root -->
+  <!-- all images are in /images/ and list.json in root -->
+  <!-- emojis are random per card, card ratio 5:4, shuffled on each refresh -->
+</body>
+</html>
