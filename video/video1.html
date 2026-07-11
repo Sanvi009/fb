@@ -90,38 +90,44 @@
       background: #000;
       object-fit: contain;
       display: block;
-      /* Brightness boost - makes video pop */
-      filter: brightness(1.05) contrast(1.02);
-      /* Optional: slight saturation boost */
-      /* filter: brightness(1.08) contrast(1.05) saturate(1.05); */
+      /* Remove all dark overlays */
+      filter: none !important;
+      opacity: 1 !important;
     }
 
-    /* Cleaner, lighter controls */
+    /* REMOVE ALL DARK OVERLAYS - make controls transparent */
     .video-container video::-webkit-media-controls {
-      background: rgba(0, 0, 0, 0.4) !important;
+      background: transparent !important;
+      opacity: 0.3 !important;
+      transition: opacity 0.3s !important;
+    }
+
+    .video-container video::-webkit-media-controls:hover {
+      opacity: 1 !important;
     }
 
     .video-container video::-webkit-media-controls-panel {
-      background: rgba(0, 0, 0, 0.4) !important;
+      background: transparent !important;
+      background-image: none !important;
     }
 
-    .video-container video::-webkit-media-controls-play-button {
-      background: rgba(255, 255, 255, 0.15) !important;
-      border-radius: 50% !important;
+    .video-container video::-webkit-media-controls-overlay-enclosure {
+      background: transparent !important;
     }
 
-    .video-container video::-webkit-media-controls-play-button:hover {
-      background: rgba(255, 255, 255, 0.25) !important;
+    /* Remove any potential default dark gradient overlay */
+    .video-container video::-webkit-media-controls-overlay-play-button {
+      background: transparent !important;
     }
 
-    .video-container video::-webkit-media-controls-current-time-display,
-    .video-container video::-webkit-media-controls-time-remaining-display {
-      color: #fff !important;
-    }
-
-    /* Firefox controls */
+    /* Firefox */
     .video-container video::-moz-media-controls {
-      background: rgba(0, 0, 0, 0.4) !important;
+      background: transparent !important;
+    }
+
+    /* Make controls more visible on hover only */
+    .video-container:hover video::-webkit-media-controls {
+      opacity: 1 !important;
     }
 
     /* Empty space below */
