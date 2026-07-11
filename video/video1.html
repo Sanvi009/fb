@@ -143,8 +143,8 @@
 
     .suggestions-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1.2rem;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
     }
 
     .thumbnail-card {
@@ -182,29 +182,6 @@
       display: block;
     }
 
-    /* Skeleton loading for thumbnails */
-    .thumbnail-skeleton {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, #181818 25%, #222 50%, #181818 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 12px;
-      z-index: 1;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-
-    .thumbnail-container img.loaded ~ .thumbnail-skeleton {
-      display: none;
-    }
-
     /* Empty space below */
     .empty-space {
       flex: 1;
@@ -226,14 +203,14 @@
         padding: 0 0.5rem;
       }
       .suggestions-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.8rem;
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
       }
     }
 
     @media (min-width: 601px) and (max-width: 900px) {
       .suggestions-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
@@ -271,7 +248,7 @@
   <div class="suggestions">
     <div class="suggestions-title">More videos</div>
     <div class="suggestions-grid" id="thumbnailGrid">
-      <!-- Thumbnails will be loaded here -->
+      <!-- Thumbnails will be loaded here from list.json -->
     </div>
   </div>
 
@@ -282,10 +259,10 @@
     (function() {
       "use strict";
 
-      const JSON_PATH = '/list.json';
-      const IMAGE_FOLDER = '/images/';
-      const AFFILIATE_LINK = 'https://www.effectivecpmnetwork.com/w8enkcvg?key=d9eac75a269b68b5200f80372a3270cb';
-      const TOTAL_THUMBNAILS = 9;
+      const JSON_PATH = 'list.json';
+      const IMAGE_FOLDER = 'images/';
+      const AFFILIATE_URL = 'https://www.effectivecpmnetwork.com/w8enkcvg?key=d9eac75a269b68b5200f80372a3270cb';
+      const NUM_THUMBNAILS = 9;
 
       function shuffleArray(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
@@ -295,86 +272,68 @@
         return arr;
       }
 
-      function renderThumbnails(images) {
+      function loadThumbnails() {
         const grid = document.getElementById('thumbnailGrid');
         if (!grid) return;
 
-        // Pick 9 random images
-        const shuffled = shuffleArray([...images]);
-        const selected = shuffled.slice(0, TOTAL_THUMBNAILS);
+        fetch(JSON_PATH)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status} – ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            const entries = Object.values(data);
+            if (!entries || entries.length === 0) {
+              grid.innerHTML = `<p style="color: #666; padding: 1rem;">no images found</p>`;
+              return;
+            }
 
-        const fragment = document.createDocumentFragment();
+            // Shuffle and pick 9 random images
+            const shuffled = shuffleArray([...entries]);
+            const selected = shuffled.slice(0, NUM_THUMBNAILS);
 
-        for (let i = 0; i < selected.length; i++) {
-          const filename = selected[i].trim();
-          const imagePath = IMAGE_FOLDER + filename;
+            const fragment = document.createDocumentFragment();
 
-          const card = document.createElement('a');
-          card.className = 'thumbnail-card';
-          card.href = AFFILIATE_LINK;
-          card.target = '_blank';
-          card.rel = 'noopener noreferrer';
+            for (let i = 0; i < selected.length; i++) {
+              const filename = selected[i].trim();
+              const imagePath = IMAGE_FOLDER + filename;
 
-          const container = document.createElement('div');
-          container.className = 'thumbnail-container';
+              const card = document.createElement('a');
+              card.className = 'thumbnail-card';
+              card.href = AFFILIATE_URL;
+              card.target = '_blank';
+              card.rel = 'noopener noreferrer';
 
-          const img = document.createElement('img');
-          img.src = imagePath;
-          img.alt = '';
-          img.loading = 'lazy';
+              const container = document.createElement('div');
+              container.className = 'thumbnail-container';
 
-          // Skeleton
-          const skeleton = document.createElement('div');
-          skeleton.className = 'thumbnail-skeleton';
+              const img = document.createElement('img');
+              img.src = imagePath;
+              img.alt = '';
+              img.loading = 'lazy';
 
-          img.onload = function() {
-            this.classList.add('loaded');
-          };
+              container.appendChild(img);
+              card.appendChild(container);
+              fragment.appendChild(card);
+            }
 
-          img.onerror = function() {
-            this.style.display = 'none';
-          };
-
-          container.appendChild(img);
-          container.appendChild(skeleton);
-          card.appendChild(container);
-          fragment.appendChild(card);
-        }
-
-        grid.appendChild(fragment);
-      }
-
-      async function init() {
-        try {
-          const response = await fetch(JSON_PATH);
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status} – ${response.statusText}`);
-          }
-          const data = await response.json();
-          const entries = Object.values(data);
-          if (!entries || entries.length === 0) {
-            console.warn('No images found in list.json');
-            return;
-          }
-
-          renderThumbnails(entries);
-
-        } catch (error) {
-          console.error('Failed to load thumbnails:', error);
-          const grid = document.getElementById('thumbnailGrid');
-          if (grid) {
+            grid.appendChild(fragment);
+          })
+          .catch(error => {
+            console.error('Failed to load list.json:', error);
             grid.innerHTML = `
-              <div style="grid-column:1/-1; padding: 2rem 1rem; text-align: center; color: #888;">
-                <p style="background: #181818; padding: 1rem 2rem; border-radius: 40px; border: 1px solid #222; display: inline-block;">
+              <div style="grid-column:1/-1; padding: 1rem; text-align: center; color: #888;">
+                <p style="background: #181818; padding: 1rem; border-radius: 12px; border: 1px solid #222;">
                   ⚡ couldn't load thumbnails
                 </p>
               </div>
             `;
-          }
-        }
+          });
       }
 
-      document.addEventListener('DOMContentLoaded', init);
+      document.addEventListener('DOMContentLoaded', loadThumbnails);
     })();
   </script>
 
