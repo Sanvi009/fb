@@ -63,7 +63,7 @@
     .card {
       background: #131313;
       border-radius: 20px;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7), 0 0 0 1px #262626 inset;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7), 0 0 0 1px #2f2f2f inset;
       aspect-ratio: 5 / 4;
       display: flex;
       align-items: center;
@@ -141,10 +141,10 @@
       opacity: 0;
     }
 
-    /* responsive tweaks */
+    /* ----- MOBILE: EXACTLY 2 CARDS PER ROW ----- */
     @media (max-width: 600px) {
       .card-grid {
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.9rem;
       }
       .nav-bar span {
@@ -153,6 +153,9 @@
       }
       .card-emoji {
         font-size: 2.2rem;
+      }
+      .card {
+        border-radius: 16px;
       }
     }
 
@@ -187,7 +190,6 @@
   <!-- nav bar: only text "videos" (or nothing) -->
   <nav class="nav-bar">
     <span>videos</span>
-    <!-- you could also remove the span for "nothing" – but we keep minimal text -->
   </nav>
 
   <!-- card grid injected by javascript -->
