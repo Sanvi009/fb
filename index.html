@@ -59,7 +59,7 @@
       padding: 0.2rem 0 1rem;
     }
 
-    /* card – 5:4 ratio, dark surface, emoji only */
+    /* card – 5:4 ratio, dark surface, NO emoji, just image */
     .card {
       background: #131313;
       border-radius: 20px;
@@ -86,59 +86,90 @@
       object-fit: cover;
       border-radius: 16px;
       background: #0f0f0f;
-      transition: opacity 0.2s;
+      transition: opacity 0.3s ease;
       box-shadow: 0 0 0 1px #2b2b2b inset;
     }
 
-    /* emoji overlay – on top of image, subtle, centered */
-    .card-emoji {
+    /* ----- SKELETON LOADING ----- */
+    .skeleton {
+      background: #1a1a1a;
+      border-radius: 20px;
+      aspect-ratio: 5 / 4;
+      width: 100%;
+      box-shadow: 0 0 0 1px #2a2a2a inset;
+      position: relative;
+      overflow: hidden;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .skeleton::before {
+      content: '';
       position: absolute;
       top: 0;
-      left: 0;
-      width: 100%;
+      left: -100%;
+      width: 300%;
       height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      font-size: 2.8rem;
-      line-height: 1;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.9), 0 0 12px #000000;
-      color: rgba(255, 255, 255, 0.9);
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,240,0.02), transparent 70%);
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(60, 60, 60, 0.15) 30%, 
+        rgba(80, 80, 80, 0.2) 50%, 
+        rgba(60, 60, 60, 0.15) 70%, 
+        transparent 100%);
+      animation: skeleton-shimmer 1.8s infinite;
       border-radius: 20px;
-      letter-spacing: 0.05em;
-      font-weight: 300;
-      opacity: 0.95;
-      mix-blend-mode: soft-light;
     }
 
-    /* fallback if image fails: show emoji on dark bg */
-    .card .fallback-emoji {
-      font-size: 3.2rem;
-      color: #f0f0f0;
-      text-shadow: 0 0 10px #222;
-      background: #1b1b1b;
+    @keyframes skeleton-shimmer {
+      0% { transform: translateX(-30%); }
+      100% { transform: translateX(30%); }
+    }
+
+    .skeleton-inner {
       width: 100%;
       height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: #181818;
+      border-radius: 16px;
+      box-shadow: inset 0 0 0 1px #252525;
+    }
+
+    /* hide skeleton when image loads */
+    .card img.loaded + .skeleton-placeholder {
+      display: none;
+    }
+
+    .skeleton-placeholder {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      right: 0.5rem;
+      bottom: 0.5rem;
       border-radius: 16px;
       background: #181818;
+      box-shadow: inset 0 0 0 1px #252525;
       pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.3s;
     }
 
-    /* hide emoji if image loads, but we keep both (emoji as overlay) */
-    .card img.loaded + .card-emoji {
-      opacity: 0.6;
-      mix-blend-mode: overlay;
-      color: #fff;
-    }
-
-    /* loading / empty state – nothing extra */
-    .card img:not([src]) {
+    /* when image is loaded, hide skeleton placeholder */
+    .card img.loaded ~ .skeleton-placeholder {
       opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    /* fallback if image fails: show dark card with no emoji */
+    .card img[style*="display: none"] ~ .skeleton-placeholder {
+      opacity: 1;
+      background: #181818;
+    }
+
+    /* hide skeleton completely after load (we use loaded class) */
+    .card img.loaded + .skeleton-placeholder {
+      display: none;
     }
 
     /* ----- MOBILE: EXACTLY 2 CARDS PER ROW ----- */
@@ -151,10 +182,13 @@
         font-size: 1.4rem;
         padding: 0.15rem 1rem;
       }
-      .card-emoji {
-        font-size: 2.2rem;
-      }
       .card {
+        border-radius: 16px;
+      }
+      .skeleton {
+        border-radius: 16px;
+      }
+      .skeleton::before {
         border-radius: 16px;
       }
     }
@@ -163,9 +197,6 @@
       .card-grid {
         grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
         gap: 1.6rem;
-      }
-      .card-emoji {
-        font-size: 3.4rem;
       }
     }
 
@@ -202,13 +233,7 @@
       // ----- configuration -----
       const JSON_PATH = 'list.json';          // root relative
       const IMAGE_FOLDER = 'images/';         // root/images/
-      // fallback emoji set – each card gets one random emoji
-      const EMOJI_SET = [
-        '🌀', '🌊', '🔥', '💫', '✨', '🌙', '☀️', '⭐', '🌍', '🌈',
-        '🎬', '📽️', '🎞️', '📀', '💿', '🎧', '🎼', '🎵', '🎶', '🔊',
-        '👾', '🤖', '👽', '🛸', '🧩', '🎲', '♟️', '🎯', '🏆', '🥇',
-        '💎', '🔮', '🕯️', '🧿', '🪬', '🌸', '🌺', '🍀', '🌿', '🍂'
-      ];
+      // NO emojis – entirely removed
 
       // ----- shuffle function (Fisher–Yates) -----
       function shuffleArray(arr) {
@@ -219,20 +244,21 @@
         return arr;
       }
 
-      // ----- load JSON and render shuffled cards -----
+      // ----- load JSON and render shuffled cards with skeleton loading -----
       async function loadAndRender() {
         const grid = document.getElementById('cardGrid');
         if (!grid) return;
 
+        // 1. show skeleton placeholders immediately (based on number of items in JSON)
+        // we don't know the count yet, so we'll fetch first, then show skeletons.
+        // but we want skeleton to appear before images load.
+        // we'll fetch JSON, then render skeletons, then load images.
         try {
           const response = await fetch(JSON_PATH);
           if (!response.ok) {
             throw new Error(`HTTP ${response.status} – ${response.statusText}`);
           }
           const data = await response.json();
-
-          // data is an object: { "1": "1.jpg", "2": "2.jpg", ... }
-          // extract values (filenames) in any order
           const entries = Object.values(data);
           if (!entries || entries.length === 0) {
             grid.innerHTML = `<p style="color: #666; padding: 2rem;">no images found</p>`;
@@ -242,66 +268,127 @@
           // shuffle the list of filenames (full shuffle)
           const shuffledFiles = shuffleArray([...entries]);
 
-          // pre-assign a random emoji for each card (so it's consistent)
-          const getRandomEmoji = () => EMOJI_SET[Math.floor(Math.random() * EMOJI_SET.length)];
-
-          // build card html
-          let html = '';
+          // 2. build skeleton grid (same number of cards)
+          let skeletonHtml = '';
           for (let i = 0; i < shuffledFiles.length; i++) {
-            const filename = shuffledFiles[i];
-            // clean filename – just in case
-            const cleanName = filename.trim();
-            // image path: images/ + filename
-            const imagePath = IMAGE_FOLDER + cleanName;
-            // pick a random emoji for this card
-            const emoji = getRandomEmoji();
-
-            // create card with image + emoji overlay
-            html += `
-              <div class="card">
-                <img src="${imagePath}" alt="${cleanName}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.opacity='1';">
-                <div class="card-emoji">${emoji}</div>
+            skeletonHtml += `
+              <div class="skeleton">
+                <div class="skeleton-inner"></div>
               </div>
             `;
           }
+          grid.innerHTML = skeletonHtml;
 
-          grid.innerHTML = html;
+          // 3. now build real cards with images, but we'll replace each skeleton one by one
+          // we'll use a document fragment to build cards, then replace children
+          const fragment = document.createDocumentFragment();
+          for (let i = 0; i < shuffledFiles.length; i++) {
+            const filename = shuffledFiles[i];
+            const cleanName = filename.trim();
+            const imagePath = IMAGE_FOLDER + cleanName;
 
-          // optional: after load, adjust emoji visibility if image loaded
-          // we use 'load' event to add a class, but onerror already handled.
-          // we also set fallback: if image fails, emoji becomes prominent.
-          // we already handle with onerror: hide image, show emoji (opacity)
-          // but we want emoji to be visible even if image loads – we keep it as overlay.
-          // fine-tune: if image loads, we keep emoji as soft overlay.
-          // we add a small class for loaded images (but not necessary)
-          const images = grid.querySelectorAll('.card img');
-          images.forEach(img => {
-            img.addEventListener('load', function() {
-              // image loaded, emoji stays as soft overlay (default)
-              // we can add class 'loaded' but we already use css
-              this.classList.add('loaded');
-              // ensure emoji sibling is visible
-              const emojiDiv = this.nextElementSibling;
-              if (emojiDiv && emojiDiv.classList.contains('card-emoji')) {
-                emojiDiv.style.opacity = '0.7';
-                emojiDiv.style.mixBlendMode = 'overlay';
-              }
-            });
-            // if image fails, we already have onerror inline: hide img, show emoji
-            // but we also want to set emoji fully visible.
-            // onerror fires, we set display none on img, and we set emoji opacity to 1.
-            // we defined onerror inline. But we also add a listener for safety.
-            img.addEventListener('error', function() {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const img = document.createElement('img');
+            img.src = imagePath;
+            img.alt = cleanName;
+            img.loading = 'lazy';
+            // onerror: hide image, keep skeleton placeholder visible
+            img.onerror = function() {
               this.style.display = 'none';
-              const emojiDiv = this.nextElementSibling;
-              if (emojiDiv && emojiDiv.classList.contains('card-emoji')) {
-                emojiDiv.style.opacity = '1';
-                emojiDiv.style.mixBlendMode = 'normal';
-                emojiDiv.style.color = '#f5f5f5';
-                emojiDiv.style.textShadow = '0 0 20px #000, 0 0 8px #0a0a0a';
+              // skeleton placeholder is already there as sibling, but we need to keep it visible
+              // we have .skeleton-placeholder as sibling, but we used a different structure.
+              // we'll restructure: we'll add a .skeleton-placeholder as sibling to img
+              // so we need to adjust card structure.
+            };
+
+            // we need to restructure: we'll create card with img + skeleton-placeholder
+            // but we already built skeleton cards with .skeleton class.
+            // easier: recreate each card with image + skeleton placeholder.
+            // we'll replace the skeleton divs with real cards.
+          }
+
+          // Since we already inserted skeleton divs, we need to replace them with real cards.
+          // We'll use a different approach: clear grid, build real cards with skeleton placeholders inside.
+          // But we want smooth transition: show skeleton, then images load and skeleton fades.
+          // Let's rebuild from scratch with proper structure.
+
+          // Re-fetch? No, we already have data. Let's clear grid and build with real cards + skeleton placeholders.
+          // This time we include skeleton placeholder inside each card.
+          grid.innerHTML = '';
+
+          for (let i = 0; i < shuffledFiles.length; i++) {
+            const filename = shuffledFiles[i];
+            const cleanName = filename.trim();
+            const imagePath = IMAGE_FOLDER + cleanName;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const img = document.createElement('img');
+            img.src = imagePath;
+            img.alt = cleanName;
+            img.loading = 'lazy';
+            img.style.opacity = '0'; // start hidden
+
+            // skeleton placeholder (inner)
+            const skeletonDiv = document.createElement('div');
+            skeletonDiv.className = 'skeleton-placeholder';
+            // we'll style it as a shimmering block
+            skeletonDiv.style.position = 'absolute';
+            skeletonDiv.style.top = '0.5rem';
+            skeletonDiv.style.left = '0.5rem';
+            skeletonDiv.style.right = '0.5rem';
+            skeletonDiv.style.bottom = '0.5rem';
+            skeletonDiv.style.borderRadius = '16px';
+            skeletonDiv.style.background = '#181818';
+            skeletonDiv.style.boxShadow = 'inset 0 0 0 1px #252525';
+            skeletonDiv.style.pointerEvents = 'none';
+            skeletonDiv.style.zIndex = '1';
+            skeletonDiv.style.transition = 'opacity 0.4s';
+            // add shimmer effect via pseudo element? we can use a separate div.
+            // better: add a shimmer overlay inside skeleton placeholder
+            const shimmer = document.createElement('div');
+            shimmer.style.position = 'absolute';
+            shimmer.style.top = '0';
+            shimmer.style.left = '-100%';
+            shimmer.style.width = '300%';
+            shimmer.style.height = '100%';
+            shimmer.style.background = 'linear-gradient(90deg, transparent 0%, rgba(60,60,60,0.15) 30%, rgba(80,80,80,0.2) 50%, rgba(60,60,60,0.15) 70%, transparent 100%)';
+            shimmer.style.animation = 'skeleton-shimmer 1.8s infinite';
+            shimmer.style.borderRadius = '16px';
+            skeletonDiv.appendChild(shimmer);
+
+            // when image loads: hide skeleton, show image
+            img.onload = function() {
+              this.style.opacity = '1';
+              this.classList.add('loaded');
+              // fade out skeleton
+              const skel = this.nextElementSibling;
+              if (skel && skel.classList.contains('skeleton-placeholder')) {
+                skel.style.opacity = '0';
+                setTimeout(() => {
+                  skel.style.display = 'none';
+                }, 400);
               }
-            });
-          });
+            };
+
+            // if image fails: keep skeleton visible, hide image
+            img.onerror = function() {
+              this.style.display = 'none';
+              const skel = this.nextElementSibling;
+              if (skel && skel.classList.contains('skeleton-placeholder')) {
+                skel.style.opacity = '1';
+                skel.style.display = 'block';
+                // remove shimmer? keep it.
+              }
+            };
+
+            card.appendChild(img);
+            card.appendChild(skeletonDiv);
+            grid.appendChild(card);
+          }
 
         } catch (error) {
           console.error('Failed to load list.json:', error);
@@ -321,8 +408,7 @@
     })();
   </script>
 
-  <!-- note: if json fails, fallback shows error; images folder from root -->
   <!-- all images are in /images/ and list.json in root -->
-  <!-- emojis are random per card, card ratio 5:4, shuffled on each refresh -->
+  <!-- emojis removed, skeleton loading added -->
 </body>
 </html>
