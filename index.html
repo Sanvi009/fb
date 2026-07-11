@@ -78,7 +78,6 @@
       overflow: hidden;
     }
 
-    /* image inside – fills the card, smooth */
     .card img {
       display: block;
       width: 100%;
@@ -135,11 +134,6 @@
       box-shadow: inset 0 0 0 1px #252525;
     }
 
-    /* hide skeleton when image loads */
-    .card img.loaded + .skeleton-placeholder {
-      display: none;
-    }
-
     .skeleton-placeholder {
       position: absolute;
       top: 0.5rem;
@@ -154,22 +148,60 @@
       transition: opacity 0.3s;
     }
 
-    /* when image is loaded, hide skeleton placeholder */
     .card img.loaded ~ .skeleton-placeholder {
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s;
     }
 
-    /* fallback if image fails: show dark card with no emoji */
     .card img[style*="display: none"] ~ .skeleton-placeholder {
       opacity: 1;
       background: #181818;
     }
 
-    /* hide skeleton completely after load (we use loaded class) */
     .card img.loaded + .skeleton-placeholder {
       display: none;
+    }
+
+    /* ----- LOAD MORE BUTTON ----- */
+    .load-more-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 2rem 0 1rem;
+      width: 100%;
+      max-width: 1280px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .load-more-btn {
+      background: #1a1a1a;
+      color: #e0e0e0;
+      border: 1px solid #333;
+      padding: 0.8rem 2.8rem;
+      border-radius: 60px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.1s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      letter-spacing: 0.03em;
+      backdrop-filter: blur(4px);
+    }
+
+    .load-more-btn:hover {
+      background: #252525;
+      border-color: #4a4a4a;
+    }
+
+    .load-more-btn:active {
+      transform: scale(0.96);
+    }
+
+    .load-more-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
     }
 
     /* ----- MOBILE: EXACTLY 2 CARDS PER ROW ----- */
@@ -191,6 +223,10 @@
       .skeleton::before {
         border-radius: 16px;
       }
+      .load-more-btn {
+        padding: 0.7rem 2rem;
+        font-size: 1rem;
+      }
     }
 
     @media (min-width: 1000px) {
@@ -200,12 +236,10 @@
       }
     }
 
-    /* accessibility & touch */
     .card:active {
       transform: scale(0.98);
     }
 
-    /* scrollbar – dark */
     ::-webkit-scrollbar {
       width: 8px;
       background: #121212;
@@ -239,15 +273,18 @@
 </head>
 <body>
 
-  <!-- nav bar: only text "videos" (or nothing) -->
   <nav class="nav-bar">
     <span>videos</span>
   </nav>
 
-  <!-- card grid injected by javascript -->
   <div class="card-grid" id="cardGrid"></div>
 
-  <!-- SOCIAL BAR AD CONTAINER - inserted right before closing body -->
+  <!-- LOAD MORE BUTTON -->
+  <div class="load-more-wrapper" id="loadMoreWrapper">
+    <button class="load-more-btn" id="loadMoreBtn">Load More</button>
+  </div>
+
+  <!-- SOCIAL BAR AD CONTAINER -->
   <div class="social-bar-container" id="socialBarContainer">
     <div id="socialAdWrapper">
       <!-- The ad script will inject content here -->
@@ -259,11 +296,17 @@
       "use strict";
 
       // ----- configuration -----
-      const JSON_PATH = 'list.json';          // root relative
-      const IMAGE_FOLDER = 'images/';         // root/images/
-      // NO emojis – entirely removed
+      const JSON_PATH = 'list.json';
+      const IMAGE_FOLDER = 'images/';
+      const CARDS_PER_BATCH = 10;
 
-      // ----- shuffle function (Fisher–Yates) -----
+      // ----- state -----
+      let allFiles = [];          // shuffled filenames
+      let currentIndex = 0;       // next index to load
+      let isLoading = false;      // prevent double-trigger
+      let allLoaded = false;
+
+      // ----- shuffle function -----
       function shuffleArray(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -272,15 +315,112 @@
         return arr;
       }
 
-      // ----- load JSON and render shuffled cards with skeleton loading -----
-      async function loadAndRender() {
+      // ----- render a batch of cards (from currentIndex, up to CARDS_PER_BATCH) -----
+      function renderNextBatch() {
         const grid = document.getElementById('cardGrid');
         if (!grid) return;
 
-        // 1. show skeleton placeholders immediately (based on number of items in JSON)
-        // we don't know the count yet, so we'll fetch first, then show skeletons.
-        // but we want skeleton to appear before images load.
-        // we'll fetch JSON, then render skeletons, then load images.
+        if (allLoaded || currentIndex >= allFiles.length) {
+          // disable button if no more files
+          const btn = document.getElementById('loadMoreBtn');
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'All loaded';
+          }
+          return;
+        }
+
+        // determine how many to take
+        const end = Math.min(currentIndex + CARDS_PER_BATCH, allFiles.length);
+        const batch = allFiles.slice(currentIndex, end);
+        currentIndex = end;
+
+        // check if we've reached the end
+        if (currentIndex >= allFiles.length) {
+          allLoaded = true;
+          const btn = document.getElementById('loadMoreBtn');
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'All loaded';
+          }
+        }
+
+        // create cards for this batch (with skeleton inside)
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < batch.length; i++) {
+          const filename = batch[i].trim();
+          const imagePath = IMAGE_FOLDER + filename;
+
+          const card = document.createElement('div');
+          card.className = 'card';
+
+          const img = document.createElement('img');
+          img.src = imagePath;
+          img.alt = filename;
+          img.loading = 'lazy';
+          img.style.opacity = '0';
+
+          // skeleton placeholder
+          const skeletonDiv = document.createElement('div');
+          skeletonDiv.className = 'skeleton-placeholder';
+          skeletonDiv.style.position = 'absolute';
+          skeletonDiv.style.top = '0.5rem';
+          skeletonDiv.style.left = '0.5rem';
+          skeletonDiv.style.right = '0.5rem';
+          skeletonDiv.style.bottom = '0.5rem';
+          skeletonDiv.style.borderRadius = '16px';
+          skeletonDiv.style.background = '#181818';
+          skeletonDiv.style.boxShadow = 'inset 0 0 0 1px #252525';
+          skeletonDiv.style.pointerEvents = 'none';
+          skeletonDiv.style.zIndex = '1';
+          skeletonDiv.style.transition = 'opacity 0.4s';
+
+          const shimmer = document.createElement('div');
+          shimmer.style.position = 'absolute';
+          shimmer.style.top = '0';
+          shimmer.style.left = '-100%';
+          shimmer.style.width = '300%';
+          shimmer.style.height = '100%';
+          shimmer.style.background = 'linear-gradient(90deg, transparent 0%, rgba(60,60,60,0.15) 30%, rgba(80,80,80,0.2) 50%, rgba(60,60,60,0.15) 70%, transparent 100%)';
+          shimmer.style.animation = 'skeleton-shimmer 1.8s infinite';
+          shimmer.style.borderRadius = '16px';
+          skeletonDiv.appendChild(shimmer);
+
+          img.onload = function() {
+            this.style.opacity = '1';
+            this.classList.add('loaded');
+            const skel = this.nextElementSibling;
+            if (skel && skel.classList.contains('skeleton-placeholder')) {
+              skel.style.opacity = '0';
+              setTimeout(() => {
+                skel.style.display = 'none';
+              }, 400);
+            }
+          };
+
+          img.onerror = function() {
+            this.style.display = 'none';
+            const skel = this.nextElementSibling;
+            if (skel && skel.classList.contains('skeleton-placeholder')) {
+              skel.style.opacity = '1';
+              skel.style.display = 'block';
+            }
+          };
+
+          card.appendChild(img);
+          card.appendChild(skeletonDiv);
+          fragment.appendChild(card);
+        }
+
+        grid.appendChild(fragment);
+      }
+
+      // ----- load JSON and initialize -----
+      async function init() {
+        const grid = document.getElementById('cardGrid');
+        const btn = document.getElementById('loadMoreBtn');
+        if (!grid || !btn) return;
+
         try {
           const response = await fetch(JSON_PATH);
           if (!response.ok) {
@@ -290,134 +430,24 @@
           const entries = Object.values(data);
           if (!entries || entries.length === 0) {
             grid.innerHTML = `<p style="color: #666; padding: 2rem;">no images found</p>`;
+            btn.style.display = 'none';
             return;
           }
 
-          // shuffle the list of filenames (full shuffle)
-          const shuffledFiles = shuffleArray([...entries]);
+          // shuffle all files
+          allFiles = shuffleArray([...entries]);
+          currentIndex = 0;
+          allLoaded = false;
 
-          // 2. build skeleton grid (same number of cards)
-          let skeletonHtml = '';
-          for (let i = 0; i < shuffledFiles.length; i++) {
-            skeletonHtml += `
-              <div class="skeleton">
-                <div class="skeleton-inner"></div>
-              </div>
-            `;
-          }
-          grid.innerHTML = skeletonHtml;
-
-          // 3. now build real cards with images, but we'll replace each skeleton one by one
-          // we'll use a document fragment to build cards, then replace children
-          const fragment = document.createDocumentFragment();
-          for (let i = 0; i < shuffledFiles.length; i++) {
-            const filename = shuffledFiles[i];
-            const cleanName = filename.trim();
-            const imagePath = IMAGE_FOLDER + cleanName;
-
-            const card = document.createElement('div');
-            card.className = 'card';
-
-            const img = document.createElement('img');
-            img.src = imagePath;
-            img.alt = cleanName;
-            img.loading = 'lazy';
-            // onerror: hide image, keep skeleton placeholder visible
-            img.onerror = function() {
-              this.style.display = 'none';
-              // skeleton placeholder is already there as sibling, but we need to keep it visible
-              // we have .skeleton-placeholder as sibling, but we used a different structure.
-              // we'll restructure: we'll add a .skeleton-placeholder as sibling to img
-              // so we need to adjust card structure.
-            };
-
-            // we need to restructure: we'll create card with img + skeleton-placeholder
-            // but we already built skeleton cards with .skeleton class.
-            // easier: recreate each card with image + skeleton placeholder.
-            // we'll replace the skeleton divs with real cards.
-          }
-
-          // Since we already inserted skeleton divs, we need to replace them with real cards.
-          // We'll use a different approach: clear grid, build real cards with skeleton placeholders inside.
-          // But we want smooth transition: show skeleton, then images load and skeleton fades.
-          // Let's rebuild from scratch with proper structure.
-
-          // Re-fetch? No, we already have data. Let's clear grid and build with real cards + skeleton placeholders.
-          // This time we include skeleton placeholder inside each card.
+          // clear grid (in case of re-init)
           grid.innerHTML = '';
+          btn.disabled = false;
+          btn.textContent = 'Load More';
 
-          for (let i = 0; i < shuffledFiles.length; i++) {
-            const filename = shuffledFiles[i];
-            const cleanName = filename.trim();
-            const imagePath = IMAGE_FOLDER + cleanName;
+          // render first batch (10 cards)
+          renderNextBatch();
 
-            const card = document.createElement('div');
-            card.className = 'card';
-
-            const img = document.createElement('img');
-            img.src = imagePath;
-            img.alt = cleanName;
-            img.loading = 'lazy';
-            img.style.opacity = '0'; // start hidden
-
-            // skeleton placeholder (inner)
-            const skeletonDiv = document.createElement('div');
-            skeletonDiv.className = 'skeleton-placeholder';
-            // we'll style it as a shimmering block
-            skeletonDiv.style.position = 'absolute';
-            skeletonDiv.style.top = '0.5rem';
-            skeletonDiv.style.left = '0.5rem';
-            skeletonDiv.style.right = '0.5rem';
-            skeletonDiv.style.bottom = '0.5rem';
-            skeletonDiv.style.borderRadius = '16px';
-            skeletonDiv.style.background = '#181818';
-            skeletonDiv.style.boxShadow = 'inset 0 0 0 1px #252525';
-            skeletonDiv.style.pointerEvents = 'none';
-            skeletonDiv.style.zIndex = '1';
-            skeletonDiv.style.transition = 'opacity 0.4s';
-            // add shimmer effect via pseudo element? we can use a separate div.
-            // better: add a shimmer overlay inside skeleton placeholder
-            const shimmer = document.createElement('div');
-            shimmer.style.position = 'absolute';
-            shimmer.style.top = '0';
-            shimmer.style.left = '-100%';
-            shimmer.style.width = '300%';
-            shimmer.style.height = '100%';
-            shimmer.style.background = 'linear-gradient(90deg, transparent 0%, rgba(60,60,60,0.15) 30%, rgba(80,80,80,0.2) 50%, rgba(60,60,60,0.15) 70%, transparent 100%)';
-            shimmer.style.animation = 'skeleton-shimmer 1.8s infinite';
-            shimmer.style.borderRadius = '16px';
-            skeletonDiv.appendChild(shimmer);
-
-            // when image loads: hide skeleton, show image
-            img.onload = function() {
-              this.style.opacity = '1';
-              this.classList.add('loaded');
-              // fade out skeleton
-              const skel = this.nextElementSibling;
-              if (skel && skel.classList.contains('skeleton-placeholder')) {
-                skel.style.opacity = '0';
-                setTimeout(() => {
-                  skel.style.display = 'none';
-                }, 400);
-              }
-            };
-
-            // if image fails: keep skeleton visible, hide image
-            img.onerror = function() {
-              this.style.display = 'none';
-              const skel = this.nextElementSibling;
-              if (skel && skel.classList.contains('skeleton-placeholder')) {
-                skel.style.opacity = '1';
-                skel.style.display = 'block';
-                // remove shimmer? keep it.
-              }
-            };
-
-            card.appendChild(img);
-            card.appendChild(skeletonDiv);
-            grid.appendChild(card);
-          }
-
+          // if there are no more after first batch, button already disabled inside renderNextBatch
         } catch (error) {
           console.error('Failed to load list.json:', error);
           grid.innerHTML = `
@@ -428,6 +458,7 @@
               <p style="margin-top: 0.8rem; font-size: 0.9rem; opacity: 0.6;">check console for details</p>
             </div>
           `;
+          btn.style.display = 'none';
         }
       }
 
@@ -436,42 +467,42 @@
         const wrapper = document.getElementById('socialAdWrapper');
         if (!wrapper) return;
 
-        // Create a new script element with the ad source
         const oldScripts = wrapper.getElementsByTagName('script');
-        // Remove any existing scripts from the wrapper (but keep the wrapper itself)
         while (oldScripts.length > 0) {
           oldScripts[0].parentNode.removeChild(oldScripts[0]);
         }
 
-        // Also clear any other child nodes (like iframes or divs) to ensure fresh ad load
         wrapper.innerHTML = '';
 
-        // Create and inject the new script
         const script = document.createElement('script');
         script.src = 'https://pl30321615.effectivecpmnetwork.com/6f/33/fe/6f33fea7342f92e3403a5562666d5220.js';
         script.async = true;
         script.type = 'text/javascript';
         wrapper.appendChild(script);
-
-        console.log('[Ad] Refreshed social bar at', new Date().toLocaleTimeString());
       }
 
       // ----- start -----
       document.addEventListener('DOMContentLoaded', function() {
-        // Load card grid
-        loadAndRender();
+        init();
 
-        // Initial load of social bar ad
+        // Load more button handler
+        const btn = document.getElementById('loadMoreBtn');
+        if (btn) {
+          btn.addEventListener('click', function() {
+            if (isLoading) return;
+            isLoading = true;
+            // render next batch (synchronous, but we set flag to prevent multiple clicks)
+            renderNextBatch();
+            isLoading = false;
+          });
+        }
+
+        // Initial social ad
         refreshSocialAd();
-
-        // Set up refresh interval every 10 seconds (10000 ms)
         setInterval(refreshSocialAd, 10000);
       });
     })();
   </script>
 
-  <!-- all images are in /images/ and list.json in root -->
-  <!-- emojis removed, skeleton loading added -->
-  <!-- social bar ad with 10-second refresh -->
 </body>
 </html>
