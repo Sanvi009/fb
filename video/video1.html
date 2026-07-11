@@ -143,7 +143,7 @@
 
     .suggestions-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.5rem;
     }
 
@@ -180,6 +180,14 @@
       height: 100%;
       object-fit: cover;
       display: block;
+    }
+
+    .thumbnail-title {
+      margin-top: 0.6rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #f0f0f0;
+      line-height: 1.3;
     }
 
     /* Empty space below */
@@ -247,95 +255,19 @@
   <!-- Suggestions / Thumbnails -->
   <div class="suggestions">
     <div class="suggestions-title">More videos</div>
-    <div class="suggestions-grid" id="thumbnailGrid">
-      <!-- Thumbnails will be loaded here from list.json -->
+    <div class="suggestions-grid">
+      <!-- Video 2 Thumbnail -->
+      <a href="/video/video2.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video2.jpg" alt="Video 2" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 2</div>
+      </a>
     </div>
   </div>
 
   <!-- Empty space below -->
   <div class="empty-space"></div>
-
-  <script>
-    (function() {
-      "use strict";
-
-      const JSON_PATH = 'list.json';
-      const IMAGE_FOLDER = 'images/';
-      const AFFILIATE_URL = 'https://www.effectivecpmnetwork.com/w8enkcvg?key=d9eac75a269b68b5200f80372a3270cb';
-      const NUM_THUMBNAILS = 9;
-
-      function shuffleArray(arr) {
-        for (let i = arr.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
-      }
-
-      function loadThumbnails() {
-        const grid = document.getElementById('thumbnailGrid');
-        if (!grid) return;
-
-        fetch(JSON_PATH)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP ${response.status} – ${response.statusText}`);
-            }
-            return response.json();
-          })
-          .then(data => {
-            const entries = Object.values(data);
-            if (!entries || entries.length === 0) {
-              grid.innerHTML = `<p style="color: #666; padding: 1rem;">no images found</p>`;
-              return;
-            }
-
-            // Shuffle and pick 9 random images
-            const shuffled = shuffleArray([...entries]);
-            const selected = shuffled.slice(0, NUM_THUMBNAILS);
-
-            const fragment = document.createDocumentFragment();
-
-            for (let i = 0; i < selected.length; i++) {
-              const filename = selected[i].trim();
-              const imagePath = IMAGE_FOLDER + filename;
-
-              const card = document.createElement('a');
-              card.className = 'thumbnail-card';
-              card.href = AFFILIATE_URL;
-              card.target = '_blank';
-              card.rel = 'noopener noreferrer';
-
-              const container = document.createElement('div');
-              container.className = 'thumbnail-container';
-
-              const img = document.createElement('img');
-              img.src = imagePath;
-              img.alt = '';
-              img.loading = 'lazy';
-
-              container.appendChild(img);
-              card.appendChild(container);
-              fragment.appendChild(card);
-            }
-
-            grid.appendChild(fragment);
-          })
-          .catch(error => {
-            console.error('Failed to load list.json:', error);
-            grid.innerHTML = `
-              <div style="grid-column:1/-1; padding: 1rem; text-align: center; color: #888;">
-                <p style="background: #181818; padding: 1rem; border-radius: 12px; border: 1px solid #222;">
-                  ⚡ couldn't load thumbnails
-                </p>
-              </div>
-            `;
-          });
-      }
-
-      document.addEventListener('DOMContentLoaded', loadThumbnails);
-    })();
-  </script>
 
 </body>
 </html>
