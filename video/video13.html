@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  
+  <!-- Social Media Preview / Open Graph -->
+  <meta property="og:type" content="video.other">
+  <meta property="og:title" content="Video">
+  <meta property="og:image" content="/asset/video12.jpg">
+  <meta property="og:url" content="">
+  <meta property="og:site_name" content="">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Video">
+  <meta name="twitter:image" content="/asset/video12.jpg">
+  
+  <title>Video</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0b0b0b;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Nav bar */
+    .nav-bar {
+      width: 100%;
+      padding: 1rem 0.5rem 0.75rem;
+      background: transparent;
+      border-bottom: 1px solid #1f1f1f;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .nav-bar a {
+      font-size: 1.6rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: #f0f0f0;
+      background: #1a1a1a;
+      padding: 0.2rem 1.2rem 0.3rem;
+      border-radius: 40px;
+      border: 1px solid #2a2a2a;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .nav-bar a:hover {
+      background: #252525;
+      border-color: #4a4a4a;
+    }
+
+    /* Video container - YouTube style 16:9 */
+    .video-wrapper {
+      width: 100%;
+      max-width: 1280px;
+      margin: 1.5rem auto 0;
+      padding: 0 1rem;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #222;
+    }
+
+    .video-container video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      object-fit: contain;
+      display: block;
+      filter: none !important;
+      opacity: 1 !important;
+    }
+
+    /* REMOVE ALL DARK OVERLAYS - make controls transparent */
+    .video-container video::-webkit-media-controls {
+      background: transparent !important;
+      opacity: 0.3 !important;
+      transition: opacity 0.3s !important;
+    }
+
+    .video-container video::-webkit-media-controls:hover {
+      opacity: 1 !important;
+    }
+
+    .video-container video::-webkit-media-controls-panel {
+      background: transparent !important;
+      background-image: none !important;
+    }
+
+    .video-container video::-webkit-media-controls-overlay-enclosure {
+      background: transparent !important;
+    }
+
+    .video-container video::-webkit-media-controls-overlay-play-button {
+      background: transparent !important;
+    }
+
+    .video-container video::-moz-media-controls {
+      background: transparent !important;
+    }
+
+    .video-container:hover video::-webkit-media-controls {
+      opacity: 1 !important;
+    }
+
+    /* Thumbnail section - YouTube style suggestions */
+    .suggestions {
+      width: 100%;
+      max-width: 1280px;
+      margin: 2rem auto 0;
+      padding: 0 1rem;
+    }
+
+    .suggestions-title {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #f0f0f0;
+      margin-bottom: 1rem;
+    }
+
+    .suggestions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .thumbnail-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s;
+    }
+
+    .thumbnail-card:hover {
+      transform: scale(1.02);
+    }
+
+    .thumbnail-card:active {
+      transform: scale(0.98);
+    }
+
+    .thumbnail-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      border-radius: 12px;
+      overflow: hidden;
+      background: #181818;
+      border: 1px solid #222;
+    }
+
+    .thumbnail-container img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .thumbnail-title {
+      margin-top: 0.6rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #f0f0f0;
+      line-height: 1.3;
+    }
+
+    /* Empty space below */
+    .empty-space {
+      flex: 1;
+      min-height: 200px;
+    }
+
+    @media (max-width: 600px) {
+      .nav-bar a {
+        font-size: 1.4rem;
+        padding: 0.15rem 1rem;
+      }
+      .video-wrapper {
+        padding: 0 0.5rem;
+      }
+      .video-container {
+        border-radius: 8px;
+      }
+      .suggestions {
+        padding: 0 0.5rem;
+      }
+      .suggestions-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+      }
+    }
+
+    @media (min-width: 601px) and (max-width: 900px) {
+      .suggestions-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      background: #121212;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2f2f2f;
+      border-radius: 12px;
+    }
+  </style>
+  <script src="https://pl30329622.effectivecpmnetwork.com/95/54/59/9554591b86f37e8a31cfd2fe925c3106.js"></script>
+
+</head>
+<body>
+
+  <!-- Nav bar with Home link -->
+  <nav class="nav-bar">
+    <a href="/">Home</a>
+  </nav>
+
+  <!-- Video player -->
+  <div class="video-wrapper">
+    <div class="video-container">
+      <video 
+        src="https://pub-8c18001f5bc64883b4a7b7385238da0a.r2.dev/Watch%20Colored%20Hair%20Girl%20Painful%20Fucking%20Moaning%20-%20ViralPanu.mp4" 
+        controls
+        playsinline
+        preload="metadata"
+        poster=""
+      ></video>
+    </div>
+  </div>
+   <!-- ✅ NATIVE BANNER AD - after video (existing) -->
+  <div class="native-banner">
+    <script async="async" data-cfasync="false" src="https://pl30329742.effectivecpmnetwork.com/0c91a43fc9aebba524f7f1c4de766a76/invoke.js"></script>
+    <div id="container-0c91a43fc9aebba524f7f1c4de766a76"></div>
+  </div>
+
+  <!-- Suggestions / Thumbnails -->
+  <div class="suggestions">
+    <div class="suggestions-title">More videos</div>
+    <div class="suggestions-grid">
+      <!-- Video 1 Thumbnail -->
+      <a href="/video/video1.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video1.jpg" alt="Video 1" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 1</div>
+      </a>
+
+      <!-- Video 2 Thumbnail -->
+      <a href="/video/video2.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video2.jpg" alt="Video 2" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 2</div>
+      </a>
+
+      <!-- Video 3 Thumbnail -->
+      <a href="/video/video3.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video3.jpg" alt="Video 3" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 3</div>
+      </a>
+
+      <!-- Video 4 Thumbnail -->
+      <a href="/video/video4.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video4.jpg" alt="Video 4" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 4</div>
+      </a>
+
+      <!-- Video 5 Thumbnail -->
+      <a href="/video/video5.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video5.jpg" alt="Video 5" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 5</div>
+      </a>
+
+      <!-- Video 6 Thumbnail -->
+      <a href="/video/video6.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video6.jpg" alt="Video 6" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 6</div>
+      </a>
+
+      <!-- Video 7 Thumbnail -->
+      <a href="/video/video7.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video7.jpg" alt="Video 7" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 7</div>
+      </a>
+
+      <!-- Video 8 Thumbnail -->
+      <a href="/video/video8.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video8.jpg" alt="Video 8" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 8</div>
+      </a>
+
+      <!-- Video 9 Thumbnail -->
+      <a href="/video/video9.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video9.jpg" alt="Video 9" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 9</div>
+      </a>
+
+      <!-- Video 10 Thumbnail -->
+      <a href="/video/video10.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video10.jpg" alt="Video 10" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 10</div>
+      </a>
+
+      <!-- Video 11 Thumbnail -->
+      <a href="/video/video11.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video11.jpg" alt="Video 11" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 11</div>
+      </a>
+
+      <!-- Video 13 Thumbnail -->
+      <a href="/video/video13.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video13.jpg" alt="Video 13" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 13</div>
+      </a>
+
+      <!-- Video 14 Thumbnail -->
+      <a href="/video/video14.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video14.jpg" alt="Video 14" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 14</div>
+      </a>
+
+      <!-- Video 15 Thumbnail -->
+      <a href="/video/video15.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video15.jpg" alt="Video 15" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 15</div>
+      </a>
+
+      <!-- Video 16 Thumbnail -->
+      <a href="/video/video16.html" class="thumbnail-card">
+        <div class="thumbnail-container">
+          <img src="/asset/video16.jpg" alt="Video 16" loading="lazy">
+        </div>
+        <div class="thumbnail-title">Video 16</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Empty space below -->
+  <div class="empty-space"></div>
+  <script src="https://pl30329624.effectivecpmnetwork.com/8e/e4/72/8ee4725b5e9ad1c42c303326a459da65.js"></script>
+
+  <!-- ✅ CLICK HANDLER ADDED -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const AFFILIATE_LINK = 'https://www.effectivecpmnetwork.com/qcn39vjf?key=65e35c6e7de18f382ac7b5d2939db0fb';
+      const videoLinks = document.querySelectorAll('.thumbnail-card');
+
+      videoLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          window.open(AFFILIATE_LINK, '_blank');
+          window.location.href = this.href;
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
