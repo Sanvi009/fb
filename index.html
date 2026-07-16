@@ -1,446 +1,1125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GTYQF2K0FW"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-GTYQF2K0FW');
-</script>
-
   
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>shuffle · videos</title>
-  <style>
-    /* reset & base – full black */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock – Professional Timekeeper</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --surface: #f5f5f5;
+            --text: #1a1a1a;
+            --text-secondary: #555555;
+            --border: #d4d4d4;
+            --accent: #000000;
+            --accent-hover: #2a2a2a;
+            --danger: #1a1a1a;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.10);
+            --radius-sm: 8px;
+            --radius: 14px;
+            --radius-lg: 20px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+        }
 
-    body {
-      background: #0b0b0b;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      color: #eee;
-      padding: 0 1rem 1.5rem;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* nav bar – minimal */
-    .nav-bar {
-      width: 100%;
-      padding: 1rem 0.5rem 0.75rem;
-      background: transparent;
-      border-bottom: 1px solid #1f1f1f;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      margin-bottom: 1.5rem;
-    }
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding: 20px;
+            transition: background 0.4s ease;
+        }
 
-    .nav-bar span {
-      font-size: 1.6rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      color: #f0f0f0;
-      background: #1a1a1a;
-      padding: 0.2rem 1.2rem 0.3rem;
-      border-radius: 40px;
-      border: 1px solid #2a2a2a;
-    }
+        body.alert-flash {
+            animation: alertPulse 0.6s ease-in-out 3;
+        }
 
-    /* main grid – one column, YouTube feed style */
-    .card-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.8rem;
-      width: 100%;
-      max-width: 840px;
-      margin: 0 auto;
-      padding: 0.2rem 0 1rem;
-    }
+        @keyframes alertPulse {
+            0%,
+            100% {
+                background: #ffffff;
+            }
+            50% {
+                background: #e8e8e8;
+            }
+        }
 
-    /* card – 16:9 ratio, large, video‑like */
-    .card {
-      background: #131313;
-      border-radius: 16px;
-      aspect-ratio: 16 / 9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-      border: 1px solid #222;
-      transition: transform 0.15s, border-color 0.2s;
-    }
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 420px;
+        }
 
-    .card:active {
-      transform: scale(0.99);
-    }
+        /* Timezone Selector */
+        .timezone-row {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
 
-    .card img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 16px;
-      background: #0f0f0f;
-      transition: opacity 0.3s ease;
-    }
+        .timezone-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 30px;
+            padding: 10px 36px 10px 18px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            letter-spacing: 0.01em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            transition: var(--transition);
+            outline: none;
+            min-width: 180px;
+        }
+        .timezone-select:hover {
+            border-color: #aaa;
+            box-shadow: var(--shadow-sm);
+        }
+        .timezone-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+        }
 
-    /* ----- SKELETON LOADING (16:9) ----- */
-    .skeleton {
-      background: #181818;
-      border-radius: 16px;
-      aspect-ratio: 16 / 9;
-      width: 100%;
-      border: 1px solid #222;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        /* Analog Clock Canvas */
+        .clock-canvas-wrapper {
+            position: relative;
+            width: min(300px, 72vw);
+            height: min(300px, 72vw);
+            flex-shrink: 0;
+        }
+        .clock-canvas-wrapper canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.07));
+            transition: filter 0.4s ease;
+        }
 
-    .skeleton::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 300%;
-      height: 100%;
-      background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(60, 60, 60, 0.1) 30%, 
-        rgba(80, 80, 80, 0.15) 50%, 
-        rgba(60, 60, 60, 0.1) 70%, 
-        transparent 100%);
-      animation: skeleton-shimmer 1.8s infinite;
-      border-radius: 16px;
-    }
+        /* Info Display */
+        .info-display {
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            transition: var(--transition);
+        }
+        .main-display {
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: 0.04em;
+            font-family: var(--font-mono);
+            color: var(--text);
+            line-height: 1;
+            transition: var(--transition);
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .main-display .colon {
+            opacity: 0.5;
+            font-weight: 200;
+        }
+        .sub-display {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            transition: var(--transition);
+            min-height: 22px;
+        }
+        .sub-display.flash-warning {
+            color: #1a1a1a;
+            font-weight: 600;
+            animation: textPulse 0.5s ease-in-out infinite;
+        }
+        @keyframes textPulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
 
-    @keyframes skeleton-shimmer {
-      0% { transform: translateX(-30%); }
-      100% { transform: translateX(30%); }
-    }
+        /* 24h Toggle */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0.02em;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 26px;
+            background: #d4d4d4;
+            border-radius: 26px;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .toggle-switch.active {
+            background: #1a1a1a;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .toggle-switch.active::after {
+            left: 21px;
+        }
 
-    /* skeleton placeholder inside card – 16:9 full coverage */
-    .skeleton-placeholder {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: 16px;
-      background: #181818;
-      pointer-events: none;
-      z-index: 1;
-      transition: opacity 0.4s;
-      border: 1px solid #222;
-    }
+        /* Tab Bar */
+        .tab-bar {
+            display: flex;
+            background: var(--surface);
+            border-radius: 30px;
+            padding: 4px;
+            gap: 2px;
+            box-shadow: var(--shadow-sm);
+            width: 100%;
+            max-width: 340px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 27px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text-secondary);
+            letter-spacing: 0.02em;
+            transition: var(--transition);
+            white-space: nowrap;
+            outline: none;
+        }
+        .tab-btn.active {
+            background: #ffffff;
+            color: #000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+        }
+        .tab-btn:hover:not(.active) {
+            color: #3a3a3a;
+            background: rgba(255, 255, 255, 0.5);
+        }
 
-    .card img.loaded ~ .skeleton-placeholder {
-      opacity: 0;
-      pointer-events: none;
-    }
+        /* Controls */
+        .controls-area {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            min-height: 48px;
+            align-items: center;
+            transition: var(--transition);
+        }
+        .btn {
+            padding: 11px 24px;
+            border-radius: 28px;
+            border: 1.5px solid #ccc;
+            background: #fff;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            transition: var(--transition);
+            color: #1a1a1a;
+            outline: none;
+            white-space: nowrap;
+        }
+        .btn:hover {
+            background: #f8f8f8;
+            border-color: #aaa;
+        }
+        .btn:active {
+            transform: scale(0.96);
+            background: #eee;
+        }
+        .btn.primary {
+            background: #1a1a1a;
+            color: #fff;
+            border-color: #1a1a1a;
+            font-weight: 600;
+        }
+        .btn.primary:hover {
+            background: #333;
+            border-color: #333;
+        }
+        .btn.primary:active {
+            background: #000;
+            transform: scale(0.96);
+        }
+        .btn.danger {
+            border-color: #1a1a1a;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        .btn.danger:hover {
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
 
-    .card img[style*="display: none"] ~ .skeleton-placeholder {
-      opacity: 1;
-      background: #181818;
-    }
+        /* Timer Inputs */
+        .timer-inputs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .timer-input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .timer-input-group label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .timer-input {
+            width: 58px;
+            height: 44px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 1.3rem;
+            font-weight: 400;
+            border: 1.5px solid #d4d4d4;
+            border-radius: 12px;
+            background: #fafafa;
+            color: #1a1a1a;
+            outline: none;
+            transition: var(--transition);
+            letter-spacing: 0.02em;
+        }
+        .timer-input:focus {
+            border-color: #1a1a1a;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+            background: #fff;
+        }
+        .timer-separator {
+            font-size: 1.4rem;
+            font-weight: 300;
+            color: #999;
+            padding-bottom: 18px;
+        }
 
-    .card img.loaded + .skeleton-placeholder {
-      display: none;
-    }
-
-    /* ----- LOAD MORE BUTTON (light) ----- */
-    .load-more-wrapper {
-      display: flex;
-      justify-content: center;
-      margin: 2.5rem 0 1.5rem;
-      width: 100%;
-      max-width: 840px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .load-more-btn {
-      background: #1a1a1a;
-      color: #e0e0e0;
-      border: 1px solid #333;
-      padding: 0.8rem 3rem;
-      border-radius: 40px;
-      font-size: 1.1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .load-more-btn:hover {
-      background: #252525;
-      border-color: #4a4a4a;
-    }
-
-    .load-more-btn:active {
-      transform: scale(0.96);
-    }
-
-    .load-more-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    /* ----- MOBILE: 16:9 stays 1 per row, just smaller ----- */
-    @media (max-width: 600px) {
-      .card-grid {
-        gap: 1.2rem;
-      }
-      .nav-bar span {
-        font-size: 1.4rem;
-        padding: 0.15rem 1rem;
-      }
-      .card, .skeleton {
-        border-radius: 12px;
-      }
-      .skeleton::before {
-        border-radius: 12px;
-      }
-      .load-more-btn {
-        padding: 0.6rem 2rem;
-        font-size: 0.95rem;
-      }
-    }
-
-    @media (min-width: 1000px) {
-      .card-grid {
-        max-width: 900px;
-      }
-    }
-
-    ::-webkit-scrollbar {
-      width: 8px;
-      background: #121212;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #2f2f2f;
-      border-radius: 12px;
-    }
-
-    /* (ad container removed) */
-  </style>
+        /* Responsive */
+        @media (max-width: 420px) {
+            .main-display {
+                font-size: 2.4rem;
+                min-height: 42px;
+            }
+            .sub-display {
+                font-size: 0.78rem;
+            }
+            .btn {
+                padding: 9px 18px;
+                font-size: 0.8rem;
+                border-radius: 24px;
+            }
+            .tab-btn {
+                padding: 8px 10px;
+                font-size: 0.78rem;
+            }
+            .timer-input {
+                width: 48px;
+                height: 38px;
+                font-size: 1.1rem;
+            }
+            .app-container {
+                gap: 14px;
+            }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="app-container">
+        <!-- Timezone Selector -->
+        <div class="timezone-row">
+            <select class="timezone-select" id="timezoneSelect" aria-label="Select timezone">
+                <option value="local">📍 Local Time</option>
+                <option value="America/New_York">New York (EST/EDT)</option>
+                <option value="America/Chicago">Chicago (CST/CDT)</option>
+                <option value="America/Denver">Denver (MST/MDT)</option>
+                <option value="America/Los_Angeles">Los Angeles (PST/PDT)</option>
+                <option value="Europe/London">London (GMT/BST)</option>
+                <option value="Europe/Paris">Paris (CET/CEST)</option>
+                <option value="Europe/Berlin">Berlin (CET/CEST)</option>
+                <option value="Asia/Dubai">Dubai (GST)</option>
+                <option value="Asia/Kolkata">Mumbai (IST)</option>
+                <option value="Asia/Shanghai">Shanghai (CST)</option>
+                <option value="Asia/Tokyo">Tokyo (JST)</option>
+                <option value="Australia/Sydney">Sydney (AEST/AEDT)</option>
+                <option value="Pacific/Auckland">Auckland (NZST/NZDT)</option>
+            </select>
+        </div>
 
-  <nav class="nav-bar">
-    <span>videos</span>
-  </nav>
+        <!-- Analog Clock -->
+        <div class="clock-canvas-wrapper">
+            <canvas id="clockCanvas" aria-label="Analog clock"></canvas>
+        </div>
 
-  <div class="card-grid" id="cardGrid"></div>
+        <!-- Info Display -->
+        <div class="info-display" id="infoDisplay">
+            <div class="main-display" id="mainDisplay">00:00:00</div>
+            <div class="sub-display" id="subDisplay">Loading…</div>
+        </div>
 
-  <!-- LOAD MORE BUTTON -->
-  <div class="load-more-wrapper" id="loadMoreWrapper">
-    <button class="load-more-btn" id="loadMoreBtn">Load More</button>
-  </div>
+        <!-- 24h Toggle (Clock mode only) -->
+        <div class="toggle-row" id="toggleRow">
+            <span>12h</span>
+            <div class="toggle-switch" id="formatToggle" role="switch" aria-checked="false" tabindex="0"
+            aria-label="Toggle 24-hour format"></div>
+            <span>24h</span>
+        </div>
 
-  <!-- (ad container removed) -->
+        <!-- Tab Bar -->
+        <div class="tab-bar" id="tabBar">
+            <button class="tab-btn active" data-mode="clock">🕐 Clock</button>
+            <button class="tab-btn" data-mode="stopwatch">⏱ Stopwatch</button>
+            <button class="tab-btn" data-mode="timer">⏳ Timer</button>
+        </div>
 
-  <script>
-    // ============================================================
-    // MAIN APP – card loading & pagination (16:9, 1 per row)
-    // ============================================================
-    (function() {
-      "use strict";
+        <!-- Controls -->
+        <div class="controls-area" id="controlsArea">
+            <!-- Dynamic controls rendered by JS -->
+        </div>
+    </div>
 
-      const JSON_PATH = 'list.json';
-      const IMAGE_FOLDER = 'images/';
-      const CARDS_PER_BATCH = 10;
+    <script>
+        (function() {
+            // ─────────────────────────────────────
+            // DOM ELEMENTS
+            // ─────────────────────────────────────
+            const canvas = document.getElementById('clockCanvas');
+            const ctx = canvas.getContext('2d');
+            const mainDisplay = document.getElementById('mainDisplay');
+            const subDisplay = document.getElementById('subDisplay');
+            const controlsArea = document.getElementById('controlsArea');
+            const toggleRow = document.getElementById('toggleRow');
+            const formatToggle = document.getElementById('formatToggle');
+            const timezoneSelect = document.getElementById('timezoneSelect');
+            const tabBar = document.getElementById('tabBar');
+            const infoDisplay = document.getElementById('infoDisplay');
+            const body = document.body;
 
-      let allFiles = [];
-      let currentIndex = 0;
-      let isLoading = false;
-      let allLoaded = false;
+            // ─────────────────────────────────────
+            // STATE
+            // ─────────────────────────────────────
+            let currentMode = 'clock'; // 'clock' | 'stopwatch' | 'timer'
+            let is24Hour = false;
+            let selectedTimezone = 'local';
 
-      function shuffleArray(arr) {
-        for (let i = arr.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
-      }
+            // Stopwatch state
+            let swStartTime = 0;
+            let swElapsed = 0;
+            let swRunning = false;
+            let swInterval = null;
 
-      function renderNextBatch() {
-        const grid = document.getElementById('cardGrid');
-        if (!grid) return;
+            // Timer state
+            let timerTotalSeconds = 0;
+            let timerRemaining = 0;
+            let timerRunning = false;
+            let timerInterval = null;
+            let timerInputHours = 0;
+            let timerInputMinutes = 5;
+            let timerInputSeconds = 0;
 
-        if (allLoaded || currentIndex >= allFiles.length) {
-          const btn = document.getElementById('loadMoreBtn');
-          if (btn) {
-            btn.disabled = true;
-            btn.textContent = 'All loaded';
-          }
-          return;
-        }
-
-        const end = Math.min(currentIndex + CARDS_PER_BATCH, allFiles.length);
-        const batch = allFiles.slice(currentIndex, end);
-        currentIndex = end;
-
-        if (currentIndex >= allFiles.length) {
-          allLoaded = true;
-          const btn = document.getElementById('loadMoreBtn');
-          if (btn) {
-            btn.disabled = true;
-            btn.textContent = 'All loaded';
-          }
-        }
-
-        const fragment = document.createDocumentFragment();
-        for (let i = 0; i < batch.length; i++) {
-          const filename = batch[i].trim();
-          const imagePath = IMAGE_FOLDER + filename;
-
-          const card = document.createElement('div');
-          card.className = 'card';
-
-          const img = document.createElement('img');
-          img.src = imagePath;
-          img.alt = filename;
-          img.loading = 'lazy';
-          img.style.opacity = '0';
-
-          // Skeleton placeholder – covers whole card (16:9)
-          const skeletonDiv = document.createElement('div');
-          skeletonDiv.className = 'skeleton-placeholder';
-          skeletonDiv.style.position = 'absolute';
-          skeletonDiv.style.top = '0';
-          skeletonDiv.style.left = '0';
-          skeletonDiv.style.right = '0';
-          skeletonDiv.style.bottom = '0';
-          skeletonDiv.style.borderRadius = '16px';
-          skeletonDiv.style.background = '#181818';
-          skeletonDiv.style.pointerEvents = 'none';
-          skeletonDiv.style.zIndex = '1';
-          skeletonDiv.style.transition = 'opacity 0.4s';
-          skeletonDiv.style.border = '1px solid #222';
-
-          const shimmer = document.createElement('div');
-          shimmer.style.position = 'absolute';
-          shimmer.style.top = '0';
-          shimmer.style.left = '-100%';
-          shimmer.style.width = '300%';
-          shimmer.style.height = '100%';
-          shimmer.style.background = 'linear-gradient(90deg, transparent 0%, rgba(60,60,60,0.1) 30%, rgba(80,80,80,0.15) 50%, rgba(60,60,60,0.1) 70%, transparent 100%)';
-          shimmer.style.animation = 'skeleton-shimmer 1.8s infinite';
-          shimmer.style.borderRadius = '16px';
-          skeletonDiv.appendChild(shimmer);
-
-          img.onload = function() {
-            this.style.opacity = '1';
-            this.classList.add('loaded');
-            const skel = this.nextElementSibling;
-            if (skel && skel.classList.contains('skeleton-placeholder')) {
-              skel.style.opacity = '0';
-              setTimeout(() => {
-                skel.style.display = 'none';
-              }, 400);
+            // ─────────────────────────────────────
+            // CANVAS SETUP
+            // ─────────────────────────────────────
+            function setupCanvas() {
+                const wrapper = canvas.parentElement;
+                const cssSize = wrapper.clientWidth;
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                const internalSize = Math.floor(cssSize * dpr);
+                canvas.width = internalSize;
+                canvas.height = internalSize;
+                canvas.style.width = cssSize + 'px';
+                canvas.style.height = cssSize + 'px';
+                return { cssSize, dpr, internalSize };
             }
-          };
 
-          img.onerror = function() {
-            this.style.display = 'none';
-            const skel = this.nextElementSibling;
-            if (skel && skel.classList.contains('skeleton-placeholder')) {
-              skel.style.opacity = '1';
-              skel.style.display = 'block';
+            let canvasMetrics = { cssSize: 300, dpr: 2, internalSize: 600 };
+
+            function recalcCanvas() {
+                canvasMetrics = setupCanvas();
             }
-          };
 
-          card.appendChild(img);
-          card.appendChild(skeletonDiv);
-          fragment.appendChild(card);
-        }
+            // ─────────────────────────────────────
+            // GET TIME IN SELECTED TIMEZONE
+            // ─────────────────────────────────────
+            function getTimeInTimezone() {
+                const now = new Date();
+                if (selectedTimezone === 'local') {
+                    return {
+                        hours: now.getHours(),
+                        minutes: now.getMinutes(),
+                        seconds: now.getSeconds(),
+                        milliseconds: now.getMilliseconds(),
+                        date: now,
+                    };
+                }
+                try {
+                    const options = {
+                        timeZone: selectedTimezone,
+                        hour12: false,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                    };
+                    const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(now);
+                    const getPart = (type) => parseInt(parts.find(p => p.type === type)?.value || '0', 10);
+                    const hours = getPart('hour');
+                    const minutes = getPart('minute');
+                    const seconds = getPart('second');
+                    const month = getPart('month');
+                    const day = getPart('day');
+                    const year = getPart('year');
+                    const tzDate = new Date(year, month - 1, day, hours, minutes, seconds);
+                    return {
+                        hours,
+                        minutes,
+                        seconds,
+                        milliseconds: now.getMilliseconds(),
+                        date: tzDate,
+                    };
+                } catch (e) {
+                    return {
+                        hours: now.getHours(),
+                        minutes: now.getMinutes(),
+                        seconds: now.getSeconds(),
+                        milliseconds: now.getMilliseconds(),
+                        date: now,
+                    };
+                }
+            }
 
-        grid.appendChild(fragment);
-      }
+            // ─────────────────────────────────────
+            // DRAW ANALOG CLOCK
+            // ─────────────────────────────────────
+            function drawClock() {
+                const { cssSize, dpr } = canvasMetrics;
+                const size = cssSize;
+                const cx = size / 2;
+                const cy = size / 2;
+                const outerRadius = size * 0.44;
+                const tickOuter = outerRadius - 2;
+                const tickInnerHour = tickOuter - size * 0.045;
+                const tickInnerMin = tickOuter - size * 0.025;
+                const numRadius = outerRadius - size * 0.09;
+                const hourLen = outerRadius * 0.54;
+                const minLen = outerRadius * 0.76;
+                const secLen = outerRadius * 0.82;
 
-      async function init() {
-        const grid = document.getElementById('cardGrid');
-        const btn = document.getElementById('loadMoreBtn');
-        if (!grid || !btn) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.save();
+                ctx.scale(dpr, dpr);
 
-        try {
-          const response = await fetch(JSON_PATH);
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status} – ${response.statusText}`);
-          }
-          const data = await response.json();
-          const entries = Object.values(data);
-          if (!entries || entries.length === 0) {
-            grid.innerHTML = `<p style="color: #666; padding: 2rem;">no images found</p>`;
-            btn.style.display = 'none';
-            return;
-          }
+                // Outer ring shadow
+                ctx.beginPath();
+                ctx.arc(cx, cy, outerRadius + 3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0,0,0,0.03)';
+                ctx.fill();
 
-          allFiles = shuffleArray([...entries]);
-          currentIndex = 0;
-          allLoaded = false;
+                // Outer ring
+                ctx.beginPath();
+                ctx.arc(cx, cy, outerRadius, 0, Math.PI * 2);
+                ctx.strokeStyle = '#1a1a1a';
+                ctx.lineWidth = size * 0.013;
+                ctx.stroke();
 
-          grid.innerHTML = '';
-          btn.disabled = false;
-          btn.textContent = 'Load More';
+                // Inner subtle ring
+                ctx.beginPath();
+                ctx.arc(cx, cy, outerRadius - size * 0.022, 0, Math.PI * 2);
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = size * 0.004;
+                ctx.stroke();
 
-          renderNextBatch();
+                // Tick marks
+                for (let i = 0; i < 60; i++) {
+                    const angle = (i * 6 - 90) * Math.PI / 180;
+                    const isHourTick = i % 5 === 0;
+                    const innerR = isHourTick ? tickInnerHour : tickInnerMin;
+                    const x1 = cx + tickOuter * Math.cos(angle);
+                    const y1 = cy + tickOuter * Math.sin(angle);
+                    const x2 = cx + innerR * Math.cos(angle);
+                    const y2 = cy + innerR * Math.sin(angle);
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.strokeStyle = isHourTick ? '#1a1a1a' : '#c4c4c4';
+                    ctx.lineWidth = isHourTick ? size * 0.01 : size * 0.004;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                }
 
-        } catch (error) {
-          console.error('Failed to load list.json:', error);
-          grid.innerHTML = `
-            <div style="grid-column:1/-1; padding: 3rem 1rem; text-align: center; color: #888;">
-              <p style="font-size: 1.3rem; background: #181818; padding: 1rem 2rem; border-radius: 40px; display: inline-block; border: 1px solid #222;">
-                ⚡ couldn't load list.json
-              </p>
-              <p style="margin-top: 0.8rem; font-size: 0.9rem; opacity: 0.6;">check console for details</p>
-            </div>
-          `;
-          btn.style.display = 'none';
-        }
-      }
+                // Numbers
+                ctx.fillStyle = '#1a1a1a';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const numFontSize = size * 0.07;
+                ctx.font = `600 ${numFontSize}px 'Inter', 'Segoe UI', sans-serif`;
+                for (let i = 1; i <= 12; i++) {
+                    const angle = (i * 30 - 90) * Math.PI / 180;
+                    const nx = cx + numRadius * Math.cos(angle);
+                    const ny = cy + numRadius * Math.sin(angle);
+                    ctx.fillText(i.toString(), nx, ny);
+                }
 
-      document.addEventListener('DOMContentLoaded', function() {
-        init();
+                // Get time
+                const time = getTimeInTimezone();
+                const hours = time.hours % 12;
+                const minutes = time.minutes;
+                const seconds = time.seconds;
+                const ms = time.milliseconds;
 
-        const btn = document.getElementById('loadMoreBtn');
-        if (btn) {
-          btn.addEventListener('click', function() {
-            if (isLoading) return;
-            isLoading = true;
-            renderNextBatch();
-            isLoading = false;
-          });
-        }
-      });
-    })();
-  </script>
-  <script src="https://pl30321615.effectivecpmnetwork.com/6f/33/fe/6f33fea7342f92e3403a5562666d5220.js"></script>
-  <script src="https://pl30321973.effectivecpmnetwork.com/0a/ba/ac/0abaac1939b0339dc892f8d8eb5eace6.js"></script>
-  <script src="https://pl30322000.effectivecpmnetwork.com/29/7c/c4/297cc488b8246526fb736fee4f92ba66.js"></script>
-  <script src="https://pl30322020.effectivecpmnetwork.com/d1/18/30/d11830d9220bc2947a947a0923aa4d7f.js"></script>
+                // Angles (smooth)
+                const secAngle = ((seconds + ms / 1000) * 6 - 90) * Math.PI / 180;
+                const minAngle = ((minutes + seconds / 60 + ms / 60000) * 6 - 90) * Math.PI / 180;
+                const hourAngle = ((hours + minutes / 60 + seconds / 3600) * 30 - 90) * Math.PI / 180;
 
+                // Hour hand
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(
+                    cx + hourLen * Math.cos(hourAngle),
+                    cy + hourLen * Math.sin(hourAngle)
+                );
+                ctx.strokeStyle = '#1a1a1a';
+                ctx.lineWidth = size * 0.022;
+                ctx.lineCap = 'round';
+                ctx.stroke();
 
-  <script src="https://pl30322072.effectivecpmnetwork.com/28/fb/f4/28fbf4000ee5248abae1ef2d6e2fbbd4.js"></script>
+                // Minute hand
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(
+                    cx + minLen * Math.cos(minAngle),
+                    cy + minLen * Math.sin(minAngle)
+                );
+                ctx.strokeStyle = '#2a2a2a';
+                ctx.lineWidth = size * 0.015;
+                ctx.lineCap = 'round';
+                ctx.stroke();
 
+                // Second hand
+                const secTipX = cx + secLen * Math.cos(secAngle);
+                const secTipY = cy + secLen * Math.sin(secAngle);
+                const secBackX = cx - secLen * 0.16 * Math.cos(secAngle);
+                const secBackY = cy - secLen * 0.16 * Math.sin(secAngle);
+                ctx.beginPath();
+                ctx.moveTo(secBackX, secBackY);
+                ctx.lineTo(secTipX, secTipY);
+                ctx.strokeStyle = '#1a1a1a';
+                ctx.lineWidth = size * 0.006;
+                ctx.lineCap = 'round';
+                ctx.stroke();
 
+                // Second hand tip dot
+                ctx.beginPath();
+                ctx.arc(secTipX, secTipY, size * 0.014, 0, Math.PI * 2);
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fill();
 
+                // Center dot
+                ctx.beginPath();
+                ctx.arc(cx, cy, size * 0.022, 0, Math.PI * 2);
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fill();
 
+                // Inner center dot
+                ctx.beginPath();
+                ctx.arc(cx, cy, size * 0.01, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
 
+                ctx.restore();
+            }
 
+            // ─────────────────────────────────────
+            // FORMAT TIME
+            // ─────────────────────────────────────
+            function formatDigitalTime(hours, minutes, seconds, use24h) {
+                let h = hours;
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                if (!use24h) {
+                    h = h % 12;
+                    if (h === 0) h = 12;
+                }
+                const hStr = String(h).padStart(2, '0');
+                const mStr = String(minutes).padStart(2, '0');
+                const sStr = String(seconds).padStart(2, '0');
+                if (use24h) {
+                    return `${hStr}:${mStr}:${sStr}`;
+                }
+                return `${hStr}:${mStr}:${sStr} ${ampm}`;
+            }
+
+            function formatDate(date) {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            }
+
+            // ─────────────────────────────────────
+            // UPDATE CLOCK DISPLAY
+            // ─────────────────────────────────────
+            function updateClockDisplay() {
+                if (currentMode !== 'clock') return;
+                const time = getTimeInTimezone();
+                const formatted = formatDigitalTime(time.hours, time.minutes, time.seconds, is24Hour);
+                mainDisplay.innerHTML = formatted
+                    .replace(/:/g, '<span class="colon">:</span>')
+                    .replace(/ (AM|PM)$/, ' <span style="font-size:0.5em;font-weight:400;opacity:0.7;">$1</span>');
+                subDisplay.textContent = formatDate(time.date);
+                subDisplay.classList.remove('flash-warning');
+            }
+
+            // ─────────────────────────────────────
+            // STOPWATCH
+            // ─────────────────────────────────────
+            function formatStopwatch(ms) {
+                const totalSec = Math.floor(ms / 1000);
+                const centiseconds = Math.floor((ms % 1000) / 10);
+                const mins = Math.floor(totalSec / 60);
+                const secs = totalSec % 60;
+                return {
+                    main: `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`,
+                    sub: `.${String(centiseconds).padStart(2, '0')}`,
+                };
+            }
+
+            function updateStopwatchDisplay() {
+                if (currentMode !== 'stopwatch') return;
+                const elapsed = swRunning ? swElapsed + (Date.now() - swStartTime) : swElapsed;
+                const formatted = formatStopwatch(elapsed);
+                mainDisplay.innerHTML = formatted.main
+                    .replace(/:/g, '<span class="colon">:</span>');
+                subDisplay.textContent = formatted.sub;
+                subDisplay.classList.remove('flash-warning');
+            }
+
+            function startStopwatch() {
+                if (swRunning) return;
+                swRunning = true;
+                swStartTime = Date.now();
+                if (swInterval) clearInterval(swInterval);
+                swInterval = setInterval(() => {
+                    updateStopwatchDisplay();
+                }, 10);
+                updateStopwatchDisplay();
+                renderControls();
+            }
+
+            function stopStopwatch() {
+                if (!swRunning) return;
+                swRunning = false;
+                swElapsed += Date.now() - swStartTime;
+                if (swInterval) clearInterval(swInterval);
+                swInterval = null;
+                updateStopwatchDisplay();
+                renderControls();
+            }
+
+            function resetStopwatch() {
+                stopStopwatch();
+                swElapsed = 0;
+                swStartTime = 0;
+                updateStopwatchDisplay();
+                renderControls();
+            }
+
+            // ─────────────────────────────────────
+            // TIMER
+            // ─────────────────────────────────────
+            function formatTimer(remainingSec) {
+                const hrs = Math.floor(remainingSec / 3600);
+                const mins = Math.floor((remainingSec % 3600) / 60);
+                const secs = remainingSec % 60;
+                return {
+                    main: `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`,
+                    sub: remainingSec <= 0 ? '⏰ Time\'s up!' : 'remaining',
+                };
+            }
+
+            function updateTimerDisplay() {
+                if (currentMode !== 'timer') return;
+                const formatted = formatTimer(timerRemaining);
+                mainDisplay.innerHTML = formatted.main
+                    .replace(/:/g, '<span class="colon">:</span>');
+                subDisplay.textContent = formatted.sub;
+                if (timerRemaining <= 0 && timerRunning === false && timerTotalSeconds > 0) {
+                    subDisplay.classList.add('flash-warning');
+                } else {
+                    subDisplay.classList.remove('flash-warning');
+                }
+            }
+
+            function startTimer() {
+                if (timerRunning) return;
+                if (timerRemaining <= 0) {
+                    timerRemaining = timerTotalSeconds;
+                    if (timerRemaining <= 0) return;
+                }
+                timerRunning = true;
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    timerRemaining--;
+                    updateTimerDisplay();
+                    if (timerRemaining <= 0) {
+                        stopTimer(true);
+                        triggerAlert();
+                    }
+                }, 1000);
+                updateTimerDisplay();
+                renderControls();
+            }
+
+            function stopTimer(finished = false) {
+                timerRunning = false;
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = null;
+                if (finished) {
+                    timerTotalSeconds = 0;
+                }
+                updateTimerDisplay();
+                renderControls();
+            }
+
+            function resetTimer() {
+                stopTimer(false);
+                timerRemaining = timerInputHours * 3600 + timerInputMinutes * 60 + timerInputSeconds;
+                timerTotalSeconds = timerRemaining;
+                updateTimerDisplay();
+                renderControls();
+            }
+
+            function triggerAlert() {
+                body.classList.add('alert-flash');
+                setTimeout(() => body.classList.remove('alert-flash'), 1800);
+            }
+
+            function setTimerFromInputs() {
+                timerTotalSeconds = timerInputHours * 3600 + timerInputMinutes * 60 + timerInputSeconds;
+                timerRemaining = timerTotalSeconds;
+                updateTimerDisplay();
+                renderControls();
+            }
+
+            // ─────────────────────────────────────
+            // RENDER CONTROLS
+            // ─────────────────────────────────────
+            function renderControls() {
+                controlsArea.innerHTML = '';
+                if (currentMode === 'clock') {
+                    // No controls needed for clock mode
+                    const hint = document.createElement('span');
+                    hint.style.cssText =
+                        'font-size:0.8rem;color:#999;letter-spacing:0.03em;';
+                    hint.textContent = 'Select a timezone above';
+                    controlsArea.appendChild(hint);
+                } else if (currentMode === 'stopwatch') {
+                    if (swRunning) {
+                        const stopBtn = createButton('⏹ Stop', 'danger', stopStopwatch);
+                        controlsArea.appendChild(stopBtn);
+                    } else {
+                        const startBtn = createButton('▶ Start', 'primary', startStopwatch);
+                        controlsArea.appendChild(startBtn);
+                    }
+                    const resetBtn = createButton('↺ Reset', 'default', resetStopwatch);
+                    if (swElapsed > 0 || swRunning) {
+                        controlsArea.appendChild(resetBtn);
+                    }
+                } else if (currentMode === 'timer') {
+                    if (timerRunning) {
+                        const pauseBtn = createButton('⏸ Pause', 'danger', () => stopTimer(false));
+                        controlsArea.appendChild(pauseBtn);
+                    } else if (timerRemaining > 0 && timerRemaining < timerTotalSeconds) {
+                        const resumeBtn = createButton('▶ Resume', 'primary', startTimer);
+                        controlsArea.appendChild(resumeBtn);
+                        const resetBtn = createButton('↺ Reset', 'default', resetTimer);
+                        controlsArea.appendChild(resetBtn);
+                    } else if (timerRemaining <= 0 && timerTotalSeconds > 0 && !timerRunning) {
+                        const restartBtn = createButton('↻ Restart', 'primary', () => {
+                            timerRemaining = timerInputHours * 3600 + timerInputMinutes * 60 +
+                                timerInputSeconds;
+                            timerTotalSeconds = timerRemaining;
+                            updateTimerDisplay();
+                            startTimer();
+                        });
+                        controlsArea.appendChild(restartBtn);
+                        const resetBtn = createButton('↺ Reset', 'default', resetTimer);
+                        controlsArea.appendChild(resetBtn);
+                    } else {
+                        const startBtn = createButton('▶ Start', 'primary', startTimer);
+                        controlsArea.appendChild(startBtn);
+                    }
+                }
+            }
+
+            function createButton(text, type, onClick) {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                if (type === 'primary') btn.classList.add('primary');
+                if (type === 'danger') btn.classList.add('danger');
+                btn.textContent = text;
+                btn.addEventListener('click', onClick);
+                return btn;
+            }
+
+            function renderTimerInputs() {
+                if (currentMode !== 'timer') return;
+                // Add timer input fields above controls
+                const existingInputs = document.querySelector('.timer-inputs-container');
+                if (existingInputs) existingInputs.remove();
+
+                if (timerRunning || (timerRemaining > 0 && timerRemaining < timerTotalSeconds && !timerRunning)) {
+                    // Don't show inputs while timer is in progress
+                    return;
+                }
+                if (timerRemaining <= 0 && timerTotalSeconds > 0 && !timerRunning) {
+                    // Timer finished, show restart option but also allow new input
+                }
+
+                const container = document.createElement('div');
+                container.className = 'timer-inputs-container';
+                container.style.cssText = 'width:100%;display:flex;justify-content:center;';
+
+                const inputsWrapper = document.createElement('div');
+                inputsWrapper.className = 'timer-inputs';
+
+                const createInputGroup = (label, value, max, onChange) => {
+                    const group = document.createElement('div');
+                    group.className = 'timer-input-group';
+                    const lbl = document.createElement('label');
+                    lbl.textContent = label;
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.className = 'timer-input';
+                    input.min = '0';
+                    input.max = String(max);
+                    input.value = String(value);
+                    input.addEventListener('input', () => {
+                        let val = parseInt(input.value, 10);
+                        if (isNaN(val) || val < 0) val = 0;
+                        if (val > max) val = max;
+                        input.value = String(val);
+                        onChange(val);
+                        setTimerFromInputs();
+                    });
+                    input.addEventListener('focus', () => input.select());
+                    group.appendChild(lbl);
+                    group.appendChild(input);
+                    return group;
+                };
+
+                const hrsGroup = createInputGroup('Hours', timerInputHours, 99, (v) => { timerInputHours = v; });
+                const sep1 = document.createElement('span');
+                sep1.className = 'timer-separator';
+                sep1.textContent = ':';
+                const minsGroup = createInputGroup('Minutes', timerInputMinutes, 59, (v) => { timerInputMinutes = v; });
+                const sep2 = document.createElement('span');
+                sep2.className = 'timer-separator';
+                sep2.textContent = ':';
+                const secsGroup = createInputGroup('Seconds', timerInputSeconds, 59, (v) => { timerInputSeconds = v; });
+
+                inputsWrapper.appendChild(hrsGroup);
+                inputsWrapper.appendChild(sep1);
+                inputsWrapper.appendChild(minsGroup);
+                inputsWrapper.appendChild(sep2);
+                inputsWrapper.appendChild(secsGroup);
+                container.appendChild(inputsWrapper);
+
+                // Insert before controls area
+                controlsArea.parentNode.insertBefore(container, controlsArea);
+            }
+
+            // ─────────────────────────────────────
+            // SWITCH MODE
+            // ─────────────────────────────────────
+            function switchMode(mode) {
+                // Clean up
+                if (swInterval) clearInterval(swInterval);
+                swInterval = null;
+                if (swRunning) {
+                    swElapsed += Date.now() - swStartTime;
+                    swRunning = false;
+                }
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = null;
+                timerRunning = false;
+                if (timerRemaining <= 0 && timerTotalSeconds > 0 && mode !== 'timer') {
+                    timerRemaining = timerTotalSeconds;
+                }
+
+                currentMode = mode;
+                body.classList.remove('alert-flash');
+
+                // Update tab buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.mode === mode);
+                });
+
+                // Show/hide toggle row
+                toggleRow.style.display = mode === 'clock' ? 'flex' : 'none';
+
+                // Remove timer inputs if not in timer mode
+                const timerInputsContainer = document.querySelector('.timer-inputs-container');
+                if (timerInputsContainer && mode !== 'timer') {
+                    timerInputsContainer.remove();
+                }
+
+                // Update display
+                if (mode === 'clock') {
+                    updateClockDisplay();
+                } else if (mode === 'stopwatch') {
+                    const formatted = formatStopwatch(swElapsed);
+                    mainDisplay.innerHTML = formatted.main.replace(/:/g, '<span class="colon">:</span>');
+                    subDisplay.textContent = formatted.sub;
+                    subDisplay.classList.remove('flash-warning');
+                } else if (mode === 'timer') {
+                    if (timerRemaining <= 0 && timerTotalSeconds === 0) {
+                        timerRemaining = timerInputHours * 3600 + timerInputMinutes * 60 + timerInputSeconds;
+                        timerTotalSeconds = timerRemaining;
+                    }
+                    updateTimerDisplay();
+                    setTimeout(renderTimerInputs, 100);
+                }
+
+                renderControls();
+                if (mode === 'timer') {
+                    setTimeout(renderTimerInputs, 150);
+                }
+            }
+
+            // ─────────────────────────────────────
+            // EVENT LISTENERS
+            // ─────────────────────────────────────
+            tabBar.addEventListener('click', (e) => {
+                const btn = e.target.closest('.tab-btn');
+                if (!btn) return;
+                const mode = btn.dataset.mode;
+                if (mode && mode !== currentMode) {
+                    switchMode(mode);
+                }
+            });
+
+            formatToggle.addEventListener('click', () => {
+                is24Hour = !is24Hour;
+                formatToggle.classList.toggle('active', is24Hour);
+                formatToggle.setAttribute('aria-checked', is24Hour);
+                if (currentMode === 'clock') updateClockDisplay();
+            });
+
+            formatToggle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    formatToggle.click();
+                }
+            });
+
+            timezoneSelect.addEventListener('change', () => {
+                selectedTimezone = timezoneSelect.value;
+                if (currentMode === 'clock') updateClockDisplay();
+            });
+
+            window.addEventListener('resize', () => {
+                recalcCanvas();
+            });
+
+            // ─────────────────────────────────────
+            // ANIMATION LOOP
+            // ─────────────────────────────────────
+            function animate() {
+                drawClock();
+                if (currentMode === 'clock') {
+                    updateClockDisplay();
+                }
+                requestAnimationFrame(animate);
+            }
+
+            // ─────────────────────────────────────
+            // INITIALIZATION
+            // ─────────────────────────────────────
+            function init() {
+                recalcCanvas();
+                updateClockDisplay();
+                renderControls();
+                formatToggle.classList.toggle('active', is24Hour);
+                formatToggle.setAttribute('aria-checked', is24Hour);
+                toggleRow.style.display = 'flex';
+                // Initialize timer state
+                timerRemaining = timerInputHours * 3600 + timerInputMinutes * 60 + timerInputSeconds;
+                timerTotalSeconds = timerRemaining;
+                requestAnimationFrame(animate);
+            }
+
+            init();
+        })();
+    </script>
 </body>
 </html>
