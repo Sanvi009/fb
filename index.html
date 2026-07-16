@@ -1,29 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
-  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clock – Professional Timekeeper</title>
+    <title>Clock · Professional Timekeeper</title>
     <style>
         :root {
             --bg: #ffffff;
-            --surface: #f5f5f5;
-            --text: #1a1a1a;
-            --text-secondary: #555555;
-            --border: #d4d4d4;
-            --accent: #000000;
-            --accent-hover: #2a2a2a;
-            --danger: #1a1a1a;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.10);
-            --radius-sm: 8px;
-            --radius: 14px;
-            --radius-lg: 20px;
-            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+            --surface: #f7f7f7;
+            --text: #121212;
+            --text-secondary: #5c5c5c;
+            --border: #dcdcdc;
+            --accent: #000;
+            --accent-soft: #2c2c2c;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow: 0 4px 12px rgba(0,0,0,0.06);
+            --radius-sm: 10px;
+            --radius: 18px;
+            --radius-lg: 24px;
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
         }
 
         * {
@@ -33,45 +29,49 @@
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
             background: var(--bg);
             color: var(--text);
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            user-select: none;
             -webkit-tap-highlight-color: transparent;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
             padding: 20px;
-            transition: background 0.4s ease;
+            user-select: none;
+            transition: background 0.3s;
         }
 
         body.alert-flash {
-            animation: alertPulse 0.6s ease-in-out 3;
+            animation: alertBg 0.5s ease-in-out 4;
         }
 
-        @keyframes alertPulse {
-            0%,
-            100% {
-                background: #ffffff;
-            }
-            50% {
-                background: #e8e8e8;
-            }
+        @keyframes alertBg {
+            0%, 100% { background: #fff; }
+            50% { background: #eaeaea; }
         }
 
-        .app-container {
+        .app-card {
+            background: var(--bg);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px 28px;
+            max-width: 400px;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
-            width: 100%;
-            max-width: 420px;
+            gap: 22px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: box-shadow 0.3s;
         }
 
-        /* Timezone Selector */
+        .app-card:hover {
+            box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+        }
+
+        /* Timezone row */
         .timezone-row {
             width: 100%;
             display: flex;
@@ -80,7 +80,6 @@
 
         .timezone-select {
             appearance: none;
-            -webkit-appearance: none;
             background: var(--surface);
             border: 1.5px solid var(--border);
             border-radius: 30px;
@@ -97,6 +96,7 @@
             transition: var(--transition);
             outline: none;
             min-width: 180px;
+            background-color: #fff;
         }
         .timezone-select:hover {
             border-color: #aaa;
@@ -104,92 +104,88 @@
         }
         .timezone-select:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
         }
 
-        /* Analog Clock Canvas */
+        /* Analog clock */
         .clock-canvas-wrapper {
             position: relative;
-            width: min(300px, 72vw);
-            height: min(300px, 72vw);
+            width: min(280px, 68vw);
+            height: min(280px, 68vw);
             flex-shrink: 0;
         }
-        .clock-canvas-wrapper canvas {
+        canvas {
             width: 100%;
             height: 100%;
             display: block;
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.07));
-            transition: filter 0.4s ease;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.08));
         }
 
-        /* Info Display */
+        /* Info display */
         .info-display {
             text-align: center;
-            min-height: 80px;
+            min-height: 70px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2px;
-            transition: var(--transition);
         }
         .main-display {
-            font-size: 3rem;
+            font-size: 2.8rem;
             font-weight: 300;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.05em;
             font-family: var(--font-mono);
             color: var(--text);
-            line-height: 1;
+            line-height: 1.1;
             transition: var(--transition);
-            min-height: 52px;
+            min-height: 48px;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
         }
         .main-display .colon {
-            opacity: 0.5;
+            opacity: 0.4;
             font-weight: 200;
         }
         .sub-display {
-            font-size: 0.9rem;
-            font-weight: 400;
+            font-size: 0.85rem;
+            font-weight: 500;
             color: var(--text-secondary);
-            letter-spacing: 0.03em;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
             transition: var(--transition);
-            min-height: 22px;
+            min-height: 20px;
+            margin-top: 2px;
         }
         .sub-display.flash-warning {
-            color: #1a1a1a;
-            font-weight: 600;
-            animation: textPulse 0.5s ease-in-out infinite;
+            color: #000;
+            font-weight: 700;
+            animation: textPulse 0.5s infinite;
         }
         @keyframes textPulse {
-            0%,
-            100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.3;
-            }
+            0%,100%{opacity:1;}50%{opacity:0.3;}
         }
 
-        /* 24h Toggle */
+        /* 24h toggle (icon style) */
         .toggle-row {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.78rem;
-            font-weight: 500;
+            font-size: 0.75rem;
+            font-weight: 600;
             color: var(--text-secondary);
-            letter-spacing: 0.02em;
+            letter-spacing: 0.03em;
+            background: var(--surface);
+            padding: 4px 12px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
         }
         .toggle-switch {
             position: relative;
-            width: 44px;
-            height: 26px;
-            background: #d4d4d4;
-            border-radius: 26px;
+            width: 40px;
+            height: 24px;
+            background: #c4c4c4;
+            border-radius: 24px;
             cursor: pointer;
             transition: var(--transition);
             flex-shrink: 0;
@@ -200,20 +196,20 @@
         .toggle-switch::after {
             content: '';
             position: absolute;
-            top: 3px;
-            left: 3px;
+            top: 2px;
+            left: 2px;
             width: 20px;
             height: 20px;
             background: #fff;
             border-radius: 50%;
             transition: var(--transition);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
         .toggle-switch.active::after {
-            left: 21px;
+            left: 18px;
         }
 
-        /* Tab Bar */
+        /* Tab bar */
         .tab-bar {
             display: flex;
             background: var(--surface);
@@ -222,62 +218,70 @@
             gap: 2px;
             box-shadow: var(--shadow-sm);
             width: 100%;
-            max-width: 340px;
+            max-width: 320px;
+            border: 1px solid var(--border);
         }
         .tab-btn {
             flex: 1;
-            padding: 10px 16px;
+            padding: 10px 12px;
             border: none;
             background: transparent;
             border-radius: 27px;
             font-family: inherit;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 500;
             cursor: pointer;
             color: var(--text-secondary);
-            letter-spacing: 0.02em;
+            letter-spacing: 0.03em;
             transition: var(--transition);
             white-space: nowrap;
             outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
         .tab-btn.active {
-            background: #ffffff;
+            background: #fff;
             color: #000;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             font-weight: 600;
         }
         .tab-btn:hover:not(.active) {
-            color: #3a3a3a;
-            background: rgba(255, 255, 255, 0.5);
+            color: #2a2a2a;
+            background: rgba(255,255,255,0.6);
         }
 
         /* Controls */
         .controls-area {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
-            min-height: 48px;
+            min-height: 42px;
             align-items: center;
             transition: var(--transition);
         }
         .btn {
-            padding: 11px 24px;
-            border-radius: 28px;
-            border: 1.5px solid #ccc;
+            padding: 10px 22px;
+            border-radius: 26px;
+            border: 1.5px solid #d0d0d0;
             background: #fff;
             font-family: inherit;
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             font-weight: 500;
             cursor: pointer;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.03em;
             transition: var(--transition);
             color: #1a1a1a;
             outline: none;
             white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
         .btn:hover {
-            background: #f8f8f8;
+            background: #f5f5f5;
             border-color: #aaa;
         }
         .btn:active {
@@ -294,14 +298,9 @@
             background: #333;
             border-color: #333;
         }
-        .btn.primary:active {
-            background: #000;
-            transform: scale(0.96);
-        }
         .btn.danger {
             border-color: #1a1a1a;
             color: #1a1a1a;
-            font-weight: 500;
         }
         .btn.danger:hover {
             background: #1a1a1a;
@@ -310,16 +309,19 @@
         .btn:disabled {
             opacity: 0.4;
             pointer-events: none;
-            cursor: not-allowed;
         }
 
-        /* Timer Inputs */
+        /* Timer inputs */
+        .timer-inputs-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
         .timer-inputs {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
         }
         .timer-input-group {
             display: flex;
@@ -328,18 +330,18 @@
             gap: 2px;
         }
         .timer-input-group label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.08em;
             color: var(--text-secondary);
-            font-weight: 500;
+            font-weight: 600;
         }
         .timer-input {
-            width: 58px;
-            height: 44px;
+            width: 52px;
+            height: 42px;
             text-align: center;
             font-family: var(--font-mono);
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 400;
             border: 1.5px solid #d4d4d4;
             border-radius: 12px;
@@ -350,51 +352,46 @@
             letter-spacing: 0.02em;
         }
         .timer-input:focus {
-            border-color: #1a1a1a;
-            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+            border-color: #000;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
             background: #fff;
         }
         .timer-separator {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 300;
             color: #999;
-            padding-bottom: 18px;
+            padding-bottom: 16px;
         }
 
-        /* Responsive */
         @media (max-width: 420px) {
-            .main-display {
-                font-size: 2.4rem;
-                min-height: 42px;
+            .app-card {
+                padding: 24px 18px 20px;
+                gap: 18px;
             }
-            .sub-display {
-                font-size: 0.78rem;
+            .main-display {
+                font-size: 2.2rem;
             }
             .btn {
-                padding: 9px 18px;
-                font-size: 0.8rem;
-                border-radius: 24px;
-            }
-            .tab-btn {
-                padding: 8px 10px;
+                padding: 8px 18px;
                 font-size: 0.78rem;
             }
-            .timer-input {
-                width: 48px;
-                height: 38px;
-                font-size: 1.1rem;
+            .tab-btn {
+                padding: 8px 8px;
+                font-size: 0.76rem;
             }
-            .app-container {
-                gap: 14px;
+            .timer-input {
+                width: 44px;
+                height: 38px;
+                font-size: 1rem;
             }
         }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-card">
         <!-- Timezone Selector -->
         <div class="timezone-row">
             <select class="timezone-select" id="timezoneSelect" aria-label="Select timezone">
@@ -426,7 +423,7 @@
             <div class="sub-display" id="subDisplay">Loading…</div>
         </div>
 
-        <!-- 24h Toggle (Clock mode only) -->
+        <!-- 24h Toggle (only visible in clock mode) -->
         <div class="toggle-row" id="toggleRow">
             <span>12h</span>
             <div class="toggle-switch" id="formatToggle" role="switch" aria-checked="false" tabindex="0"
@@ -441,17 +438,13 @@
             <button class="tab-btn" data-mode="timer">⏳ Timer</button>
         </div>
 
-        <!-- Controls -->
-        <div class="controls-area" id="controlsArea">
-            <!-- Dynamic controls rendered by JS -->
-        </div>
+        <!-- Controls Area -->
+        <div class="controls-area" id="controlsArea"></div>
     </div>
 
     <script>
         (function() {
-            // ─────────────────────────────────────
-            // DOM ELEMENTS
-            // ─────────────────────────────────────
+            // ── DOM elements ──────────────────────
             const canvas = document.getElementById('clockCanvas');
             const ctx = canvas.getContext('2d');
             const mainDisplay = document.getElementById('mainDisplay');
@@ -461,23 +454,20 @@
             const formatToggle = document.getElementById('formatToggle');
             const timezoneSelect = document.getElementById('timezoneSelect');
             const tabBar = document.getElementById('tabBar');
-            const infoDisplay = document.getElementById('infoDisplay');
             const body = document.body;
 
-            // ─────────────────────────────────────
-            // STATE
-            // ─────────────────────────────────────
-            let currentMode = 'clock'; // 'clock' | 'stopwatch' | 'timer'
+            // ── State ────────────────────────────
+            let currentMode = 'clock';
             let is24Hour = false;
             let selectedTimezone = 'local';
 
-            // Stopwatch state
+            // Stopwatch
             let swStartTime = 0;
             let swElapsed = 0;
             let swRunning = false;
             let swInterval = null;
 
-            // Timer state
+            // Timer
             let timerTotalSeconds = 0;
             let timerRemaining = 0;
             let timerRunning = false;
@@ -486,10 +476,10 @@
             let timerInputMinutes = 5;
             let timerInputSeconds = 0;
 
-            // ─────────────────────────────────────
-            // CANVAS SETUP
-            // ─────────────────────────────────────
-            function setupCanvas() {
+            // ── Canvas metrics ──────────────────
+            let canvasMetrics = { cssSize: 280, dpr: 2, internalSize: 560 };
+
+            function recalcCanvas() {
                 const wrapper = canvas.parentElement;
                 const cssSize = wrapper.clientWidth;
                 const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -498,18 +488,10 @@
                 canvas.height = internalSize;
                 canvas.style.width = cssSize + 'px';
                 canvas.style.height = cssSize + 'px';
-                return { cssSize, dpr, internalSize };
+                canvasMetrics = { cssSize, dpr, internalSize };
             }
 
-            let canvasMetrics = { cssSize: 300, dpr: 2, internalSize: 600 };
-
-            function recalcCanvas() {
-                canvasMetrics = setupCanvas();
-            }
-
-            // ─────────────────────────────────────
-            // GET TIME IN SELECTED TIMEZONE
-            // ─────────────────────────────────────
+            // ── Time in selected zone ───────────
             function getTimeInTimezone() {
                 const now = new Date();
                 if (selectedTimezone === 'local') {
@@ -522,7 +504,7 @@
                     };
                 }
                 try {
-                    const options = {
+                    const opts = {
                         timeZone: selectedTimezone,
                         hour12: false,
                         hour: '2-digit',
@@ -532,23 +514,13 @@
                         month: '2-digit',
                         day: '2-digit',
                     };
-                    const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(now);
-                    const getPart = (type) => parseInt(parts.find(p => p.type === type)?.value || '0', 10);
-                    const hours = getPart('hour');
-                    const minutes = getPart('minute');
-                    const seconds = getPart('second');
-                    const month = getPart('month');
-                    const day = getPart('day');
-                    const year = getPart('year');
-                    const tzDate = new Date(year, month - 1, day, hours, minutes, seconds);
-                    return {
-                        hours,
-                        minutes,
-                        seconds,
-                        milliseconds: now.getMilliseconds(),
-                        date: tzDate,
-                    };
-                } catch (e) {
+                    const parts = new Intl.DateTimeFormat('en-US', opts).formatToParts(now);
+                    const get = (t) => parseInt(parts.find(p => p.type === t)?.value || '0', 10);
+                    const h = get('hour'), m = get('minute'), s = get('second');
+                    const month = get('month'), day = get('day'), year = get('year');
+                    const tzDate = new Date(year, month-1, day, h, m, s);
+                    return { hours: h, minutes: m, seconds: s, milliseconds: now.getMilliseconds(), date: tzDate };
+                } catch {
                     return {
                         hours: now.getHours(),
                         minutes: now.getMinutes(),
@@ -559,207 +531,168 @@
                 }
             }
 
-            // ─────────────────────────────────────
-            // DRAW ANALOG CLOCK
-            // ─────────────────────────────────────
+            // ── Drawing (refined) ───────────────
             function drawClock() {
                 const { cssSize, dpr } = canvasMetrics;
                 const size = cssSize;
-                const cx = size / 2;
-                const cy = size / 2;
-                const outerRadius = size * 0.44;
-                const tickOuter = outerRadius - 2;
-                const tickInnerHour = tickOuter - size * 0.045;
-                const tickInnerMin = tickOuter - size * 0.025;
-                const numRadius = outerRadius - size * 0.09;
-                const hourLen = outerRadius * 0.54;
-                const minLen = outerRadius * 0.76;
-                const secLen = outerRadius * 0.82;
+                const cx = size/2, cy = size/2;
+                const outerR = size * 0.44;
+                const tickOuter = outerR - 1;
+                const tickInnerH = tickOuter - size*0.05;
+                const tickInnerM = tickOuter - size*0.028;
+                const numR = outerR - size*0.11;
+                const hourLen = outerR * 0.5;
+                const minLen = outerR * 0.72;
+                const secLen = outerR * 0.8;
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.save();
                 ctx.scale(dpr, dpr);
 
-                // Outer ring shadow
+                // subtle background ring
                 ctx.beginPath();
-                ctx.arc(cx, cy, outerRadius + 3, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(0,0,0,0.03)';
+                ctx.arc(cx, cy, outerR+2, 0, 2*Math.PI);
+                ctx.fillStyle = '#fafafa';
                 ctx.fill();
-
-                // Outer ring
                 ctx.beginPath();
-                ctx.arc(cx, cy, outerRadius, 0, Math.PI * 2);
+                ctx.arc(cx, cy, outerR, 0, 2*Math.PI);
                 ctx.strokeStyle = '#1a1a1a';
-                ctx.lineWidth = size * 0.013;
+                ctx.lineWidth = size*0.014;
                 ctx.stroke();
 
-                // Inner subtle ring
-                ctx.beginPath();
-                ctx.arc(cx, cy, outerRadius - size * 0.022, 0, Math.PI * 2);
-                ctx.strokeStyle = '#e0e0e0';
-                ctx.lineWidth = size * 0.004;
-                ctx.stroke();
-
-                // Tick marks
-                for (let i = 0; i < 60; i++) {
-                    const angle = (i * 6 - 90) * Math.PI / 180;
-                    const isHourTick = i % 5 === 0;
-                    const innerR = isHourTick ? tickInnerHour : tickInnerMin;
+                // ticks
+                for (let i=0; i<60; i++) {
+                    const angle = (i*6 - 90) * Math.PI/180;
+                    const isHour = i%5===0;
+                    const inner = isHour ? tickInnerH : tickInnerM;
                     const x1 = cx + tickOuter * Math.cos(angle);
                     const y1 = cy + tickOuter * Math.sin(angle);
-                    const x2 = cx + innerR * Math.cos(angle);
-                    const y2 = cy + innerR * Math.sin(angle);
+                    const x2 = cx + inner * Math.cos(angle);
+                    const y2 = cy + inner * Math.sin(angle);
                     ctx.beginPath();
-                    ctx.moveTo(x1, y1);
-                    ctx.lineTo(x2, y2);
-                    ctx.strokeStyle = isHourTick ? '#1a1a1a' : '#c4c4c4';
-                    ctx.lineWidth = isHourTick ? size * 0.01 : size * 0.004;
+                    ctx.moveTo(x1,y1);
+                    ctx.lineTo(x2,y2);
+                    ctx.strokeStyle = isHour ? '#1a1a1a' : '#c8c8c8';
+                    ctx.lineWidth = isHour ? size*0.011 : size*0.004;
                     ctx.lineCap = 'round';
                     ctx.stroke();
                 }
 
-                // Numbers
+                // numbers
                 ctx.fillStyle = '#1a1a1a';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                const numFontSize = size * 0.07;
-                ctx.font = `600 ${numFontSize}px 'Inter', 'Segoe UI', sans-serif`;
-                for (let i = 1; i <= 12; i++) {
-                    const angle = (i * 30 - 90) * Math.PI / 180;
-                    const nx = cx + numRadius * Math.cos(angle);
-                    const ny = cy + numRadius * Math.sin(angle);
-                    ctx.fillText(i.toString(), nx, ny);
+                ctx.font = `600 ${size*0.075}px 'Inter', 'Segoe UI', sans-serif`;
+                for (let i=1; i<=12; i++) {
+                    const angle = (i*30 - 90) * Math.PI/180;
+                    ctx.fillText(i.toString(), cx + numR*Math.cos(angle), cy + numR*Math.sin(angle));
                 }
 
-                // Get time
-                const time = getTimeInTimezone();
-                const hours = time.hours % 12;
-                const minutes = time.minutes;
-                const seconds = time.seconds;
-                const ms = time.milliseconds;
+                const t = getTimeInTimezone();
+                const h = t.hours % 12;
+                const m = t.minutes;
+                const s = t.seconds;
+                const ms = t.milliseconds;
 
-                // Angles (smooth)
-                const secAngle = ((seconds + ms / 1000) * 6 - 90) * Math.PI / 180;
-                const minAngle = ((minutes + seconds / 60 + ms / 60000) * 6 - 90) * Math.PI / 180;
-                const hourAngle = ((hours + minutes / 60 + seconds / 3600) * 30 - 90) * Math.PI / 180;
+                const secAngle = ((s + ms/1000) * 6 - 90) * Math.PI/180;
+                const minAngle = ((m + s/60 + ms/60000) * 6 - 90) * Math.PI/180;
+                const hourAngle = ((h + m/60 + s/3600) * 30 - 90) * Math.PI/180;
 
-                // Hour hand
+                // hour hand
                 ctx.beginPath();
                 ctx.moveTo(cx, cy);
-                ctx.lineTo(
-                    cx + hourLen * Math.cos(hourAngle),
-                    cy + hourLen * Math.sin(hourAngle)
-                );
+                ctx.lineTo(cx + hourLen*Math.cos(hourAngle), cy + hourLen*Math.sin(hourAngle));
                 ctx.strokeStyle = '#1a1a1a';
-                ctx.lineWidth = size * 0.022;
+                ctx.lineWidth = size*0.024;
                 ctx.lineCap = 'round';
                 ctx.stroke();
 
-                // Minute hand
+                // minute hand
                 ctx.beginPath();
                 ctx.moveTo(cx, cy);
-                ctx.lineTo(
-                    cx + minLen * Math.cos(minAngle),
-                    cy + minLen * Math.sin(minAngle)
-                );
+                ctx.lineTo(cx + minLen*Math.cos(minAngle), cy + minLen*Math.sin(minAngle));
                 ctx.strokeStyle = '#2a2a2a';
-                ctx.lineWidth = size * 0.015;
+                ctx.lineWidth = size*0.016;
                 ctx.lineCap = 'round';
                 ctx.stroke();
 
-                // Second hand
-                const secTipX = cx + secLen * Math.cos(secAngle);
-                const secTipY = cy + secLen * Math.sin(secAngle);
-                const secBackX = cx - secLen * 0.16 * Math.cos(secAngle);
-                const secBackY = cy - secLen * 0.16 * Math.sin(secAngle);
+                // second hand
+                const secTipX = cx + secLen*Math.cos(secAngle);
+                const secTipY = cy + secLen*Math.sin(secAngle);
+                const secBackX = cx - secLen*0.18*Math.cos(secAngle);
+                const secBackY = cy - secLen*0.18*Math.sin(secAngle);
                 ctx.beginPath();
                 ctx.moveTo(secBackX, secBackY);
                 ctx.lineTo(secTipX, secTipY);
                 ctx.strokeStyle = '#1a1a1a';
-                ctx.lineWidth = size * 0.006;
+                ctx.lineWidth = size*0.007;
                 ctx.lineCap = 'round';
                 ctx.stroke();
-
-                // Second hand tip dot
                 ctx.beginPath();
-                ctx.arc(secTipX, secTipY, size * 0.014, 0, Math.PI * 2);
+                ctx.arc(secTipX, secTipY, size*0.016, 0, 2*Math.PI);
                 ctx.fillStyle = '#1a1a1a';
                 ctx.fill();
 
-                // Center dot
+                // center
                 ctx.beginPath();
-                ctx.arc(cx, cy, size * 0.022, 0, Math.PI * 2);
+                ctx.arc(cx, cy, size*0.025, 0, 2*Math.PI);
                 ctx.fillStyle = '#1a1a1a';
                 ctx.fill();
-
-                // Inner center dot
                 ctx.beginPath();
-                ctx.arc(cx, cy, size * 0.01, 0, Math.PI * 2);
-                ctx.fillStyle = '#ffffff';
+                ctx.arc(cx, cy, size*0.011, 0, 2*Math.PI);
+                ctx.fillStyle = '#fff';
                 ctx.fill();
 
                 ctx.restore();
             }
 
-            // ─────────────────────────────────────
-            // FORMAT TIME
-            // ─────────────────────────────────────
-            function formatDigitalTime(hours, minutes, seconds, use24h) {
-                let h = hours;
-                const ampm = h >= 12 ? 'PM' : 'AM';
-                if (!use24h) {
-                    h = h % 12;
-                    if (h === 0) h = 12;
+            // ── Formatting ──────────────────────
+            function formatDigital(h, m, s, use24) {
+                let hour = h;
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                if (!use24) {
+                    hour = hour % 12;
+                    if (hour === 0) hour = 12;
                 }
-                const hStr = String(h).padStart(2, '0');
-                const mStr = String(minutes).padStart(2, '0');
-                const sStr = String(seconds).padStart(2, '0');
-                if (use24h) {
-                    return `${hStr}:${mStr}:${sStr}`;
-                }
-                return `${hStr}:${mStr}:${sStr} ${ampm}`;
+                const hh = String(hour).padStart(2,'0');
+                const mm = String(m).padStart(2,'0');
+                const ss = String(s).padStart(2,'0');
+                return use24 ? `${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss} ${ampm}`;
             }
 
-            function formatDate(date) {
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                return date.toLocaleDateString('en-US', options);
+            function formatDate(d) {
+                return d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
             }
 
-            // ─────────────────────────────────────
-            // UPDATE CLOCK DISPLAY
-            // ─────────────────────────────────────
             function updateClockDisplay() {
                 if (currentMode !== 'clock') return;
-                const time = getTimeInTimezone();
-                const formatted = formatDigitalTime(time.hours, time.minutes, time.seconds, is24Hour);
+                const t = getTimeInTimezone();
+                const formatted = formatDigital(t.hours, t.minutes, t.seconds, is24Hour);
                 mainDisplay.innerHTML = formatted
                     .replace(/:/g, '<span class="colon">:</span>')
-                    .replace(/ (AM|PM)$/, ' <span style="font-size:0.5em;font-weight:400;opacity:0.7;">$1</span>');
-                subDisplay.textContent = formatDate(time.date);
+                    .replace(/ (AM|PM)$/, ' <span style="font-size:0.45em;font-weight:400;opacity:0.7;">$1</span>');
+                subDisplay.textContent = formatDate(t.date);
                 subDisplay.classList.remove('flash-warning');
             }
 
-            // ─────────────────────────────────────
-            // STOPWATCH
-            // ─────────────────────────────────────
+            // ── Stopwatch ──────────────────────
             function formatStopwatch(ms) {
-                const totalSec = Math.floor(ms / 1000);
-                const centiseconds = Math.floor((ms % 1000) / 10);
-                const mins = Math.floor(totalSec / 60);
-                const secs = totalSec % 60;
+                const totalSec = Math.floor(ms/1000);
+                const cs = Math.floor((ms%1000)/10);
+                const mins = Math.floor(totalSec/60);
+                const secs = totalSec%60;
                 return {
-                    main: `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`,
-                    sub: `.${String(centiseconds).padStart(2, '0')}`,
+                    main: `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`,
+                    sub: `.${String(cs).padStart(2,'0')}`,
                 };
             }
 
             function updateStopwatchDisplay() {
                 if (currentMode !== 'stopwatch') return;
                 const elapsed = swRunning ? swElapsed + (Date.now() - swStartTime) : swElapsed;
-                const formatted = formatStopwatch(elapsed);
-                mainDisplay.innerHTML = formatted.main
-                    .replace(/:/g, '<span class="colon">:</span>');
-                subDisplay.textContent = formatted.sub;
+                const f = formatStopwatch(elapsed);
+                mainDisplay.innerHTML = f.main.replace(/:/g, '<span class="colon">:</span>');
+                subDisplay.textContent = f.sub;
                 subDisplay.classList.remove('flash-warning');
             }
 
@@ -768,9 +701,7 @@
                 swRunning = true;
                 swStartTime = Date.now();
                 if (swInterval) clearInterval(swInterval);
-                swInterval = setInterval(() => {
-                    updateStopwatchDisplay();
-                }, 10);
+                swInterval = setInterval(updateStopwatchDisplay, 10);
                 updateStopwatchDisplay();
                 renderControls();
             }
@@ -779,7 +710,7 @@
                 if (!swRunning) return;
                 swRunning = false;
                 swElapsed += Date.now() - swStartTime;
-                if (swInterval) clearInterval(swInterval);
+                clearInterval(swInterval);
                 swInterval = null;
                 updateStopwatchDisplay();
                 renderControls();
@@ -793,46 +724,36 @@
                 renderControls();
             }
 
-            // ─────────────────────────────────────
-            // TIMER
-            // ─────────────────────────────────────
-            function formatTimer(remainingSec) {
-                const hrs = Math.floor(remainingSec / 3600);
-                const mins = Math.floor((remainingSec % 3600) / 60);
-                const secs = remainingSec % 60;
+            // ── Timer ──────────────────────────
+            function formatTimer(sec) {
+                const hrs = Math.floor(sec/3600);
+                const mins = Math.floor((sec%3600)/60);
+                const s = sec%60;
                 return {
-                    main: `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`,
-                    sub: remainingSec <= 0 ? '⏰ Time\'s up!' : 'remaining',
+                    main: `${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(s).padStart(2,'0')}`,
+                    sub: sec <= 0 ? '⏰ Time\'s up!' : 'remaining',
                 };
             }
 
             function updateTimerDisplay() {
                 if (currentMode !== 'timer') return;
-                const formatted = formatTimer(timerRemaining);
-                mainDisplay.innerHTML = formatted.main
-                    .replace(/:/g, '<span class="colon">:</span>');
-                subDisplay.textContent = formatted.sub;
-                if (timerRemaining <= 0 && timerRunning === false && timerTotalSeconds > 0) {
-                    subDisplay.classList.add('flash-warning');
-                } else {
-                    subDisplay.classList.remove('flash-warning');
-                }
+                const f = formatTimer(timerRemaining);
+                mainDisplay.innerHTML = f.main.replace(/:/g, '<span class="colon">:</span>');
+                subDisplay.textContent = f.sub;
+                subDisplay.classList.toggle('flash-warning', timerRemaining <= 0 && timerTotalSeconds > 0 && !timerRunning);
             }
 
             function startTimer() {
-                if (timerRunning) return;
-                if (timerRemaining <= 0) {
-                    timerRemaining = timerTotalSeconds;
-                    if (timerRemaining <= 0) return;
-                }
+                if (timerRunning || timerRemaining <= 0) return;
                 timerRunning = true;
-                if (timerInterval) clearInterval(timerInterval);
+                clearInterval(timerInterval);
                 timerInterval = setInterval(() => {
                     timerRemaining--;
                     updateTimerDisplay();
                     if (timerRemaining <= 0) {
                         stopTimer(true);
-                        triggerAlert();
+                        body.classList.add('alert-flash');
+                        setTimeout(() => body.classList.remove('alert-flash'), 2000);
                     }
                 }, 1000);
                 updateTimerDisplay();
@@ -841,168 +762,126 @@
 
             function stopTimer(finished = false) {
                 timerRunning = false;
-                if (timerInterval) clearInterval(timerInterval);
+                clearInterval(timerInterval);
                 timerInterval = null;
-                if (finished) {
-                    timerTotalSeconds = 0;
-                }
+                if (finished) timerTotalSeconds = 0;
                 updateTimerDisplay();
                 renderControls();
             }
 
             function resetTimer() {
                 stopTimer(false);
-                timerRemaining = timerInputHours * 3600 + timerInputMinutes * 60 + timerInputSeconds;
+                timerRemaining = timerInputHours*3600 + timerInputMinutes*60 + timerInputSeconds;
                 timerTotalSeconds = timerRemaining;
                 updateTimerDisplay();
                 renderControls();
             }
 
-            function triggerAlert() {
-                body.classList.add('alert-flash');
-                setTimeout(() => body.classList.remove('alert-flash'), 1800);
-            }
-
             function setTimerFromInputs() {
-                timerTotalSeconds = timerInputHours * 3600 + timerInputMinutes * 60 + timerInputSeconds;
+                timerTotalSeconds = timerInputHours*3600 + timerInputMinutes*60 + timerInputSeconds;
                 timerRemaining = timerTotalSeconds;
                 updateTimerDisplay();
                 renderControls();
             }
 
-            // ─────────────────────────────────────
-            // RENDER CONTROLS
-            // ─────────────────────────────────────
+            // ── Render controls & inputs ────────
             function renderControls() {
                 controlsArea.innerHTML = '';
                 if (currentMode === 'clock') {
-                    // No controls needed for clock mode
                     const hint = document.createElement('span');
-                    hint.style.cssText =
-                        'font-size:0.8rem;color:#999;letter-spacing:0.03em;';
+                    hint.style.cssText = 'font-size:0.8rem;color:#999;letter-spacing:0.03em;';
                     hint.textContent = 'Select a timezone above';
                     controlsArea.appendChild(hint);
                 } else if (currentMode === 'stopwatch') {
                     if (swRunning) {
-                        const stopBtn = createButton('⏹ Stop', 'danger', stopStopwatch);
-                        controlsArea.appendChild(stopBtn);
+                        controlsArea.appendChild(createBtn('⏹ Stop', 'danger', stopStopwatch));
                     } else {
-                        const startBtn = createButton('▶ Start', 'primary', startStopwatch);
-                        controlsArea.appendChild(startBtn);
+                        controlsArea.appendChild(createBtn('▶ Start', 'primary', startStopwatch));
                     }
-                    const resetBtn = createButton('↺ Reset', 'default', resetStopwatch);
                     if (swElapsed > 0 || swRunning) {
-                        controlsArea.appendChild(resetBtn);
+                        controlsArea.appendChild(createBtn('↺ Reset', '', resetStopwatch));
                     }
                 } else if (currentMode === 'timer') {
                     if (timerRunning) {
-                        const pauseBtn = createButton('⏸ Pause', 'danger', () => stopTimer(false));
-                        controlsArea.appendChild(pauseBtn);
+                        controlsArea.appendChild(createBtn('⏸ Pause', 'danger', () => stopTimer(false)));
                     } else if (timerRemaining > 0 && timerRemaining < timerTotalSeconds) {
-                        const resumeBtn = createButton('▶ Resume', 'primary', startTimer);
-                        controlsArea.appendChild(resumeBtn);
-                        const resetBtn = createButton('↺ Reset', 'default', resetTimer);
-                        controlsArea.appendChild(resetBtn);
-                    } else if (timerRemaining <= 0 && timerTotalSeconds > 0 && !timerRunning) {
-                        const restartBtn = createButton('↻ Restart', 'primary', () => {
-                            timerRemaining = timerInputHours * 3600 + timerInputMinutes * 60 +
-                                timerInputSeconds;
+                        controlsArea.appendChild(createBtn('▶ Resume', 'primary', startTimer));
+                        controlsArea.appendChild(createBtn('↺ Reset', '', resetTimer));
+                    } else if (timerRemaining <= 0 && timerTotalSeconds > 0) {
+                        controlsArea.appendChild(createBtn('↻ Restart', 'primary', () => {
+                            timerRemaining = timerInputHours*3600 + timerInputMinutes*60 + timerInputSeconds;
                             timerTotalSeconds = timerRemaining;
                             updateTimerDisplay();
                             startTimer();
-                        });
-                        controlsArea.appendChild(restartBtn);
-                        const resetBtn = createButton('↺ Reset', 'default', resetTimer);
-                        controlsArea.appendChild(resetBtn);
+                        }));
+                        controlsArea.appendChild(createBtn('↺ Reset', '', resetTimer));
                     } else {
-                        const startBtn = createButton('▶ Start', 'primary', startTimer);
-                        controlsArea.appendChild(startBtn);
+                        controlsArea.appendChild(createBtn('▶ Start', 'primary', startTimer));
                     }
                 }
             }
 
-            function createButton(text, type, onClick) {
+            function createBtn(text, type, onClick) {
                 const btn = document.createElement('button');
-                btn.className = 'btn';
-                if (type === 'primary') btn.classList.add('primary');
-                if (type === 'danger') btn.classList.add('danger');
+                btn.className = 'btn' + (type === 'primary' ? ' primary' : '') + (type === 'danger' ? ' danger' : '');
                 btn.textContent = text;
                 btn.addEventListener('click', onClick);
                 return btn;
             }
 
             function renderTimerInputs() {
+                const existing = document.querySelector('.timer-inputs-container');
+                if (existing) existing.remove();
                 if (currentMode !== 'timer') return;
-                // Add timer input fields above controls
-                const existingInputs = document.querySelector('.timer-inputs-container');
-                if (existingInputs) existingInputs.remove();
-
-                if (timerRunning || (timerRemaining > 0 && timerRemaining < timerTotalSeconds && !timerRunning)) {
-                    // Don't show inputs while timer is in progress
-                    return;
-                }
-                if (timerRemaining <= 0 && timerTotalSeconds > 0 && !timerRunning) {
-                    // Timer finished, show restart option but also allow new input
-                }
+                if (timerRunning || (timerRemaining > 0 && timerRemaining < timerTotalSeconds && !timerRunning)) return;
 
                 const container = document.createElement('div');
                 container.className = 'timer-inputs-container';
-                container.style.cssText = 'width:100%;display:flex;justify-content:center;';
+                const wrapper = document.createElement('div');
+                wrapper.className = 'timer-inputs';
 
-                const inputsWrapper = document.createElement('div');
-                inputsWrapper.className = 'timer-inputs';
-
-                const createInputGroup = (label, value, max, onChange) => {
-                    const group = document.createElement('div');
-                    group.className = 'timer-input-group';
+                const createGroup = (label, value, max, onChange) => {
+                    const g = document.createElement('div');
+                    g.className = 'timer-input-group';
                     const lbl = document.createElement('label');
                     lbl.textContent = label;
-                    const input = document.createElement('input');
-                    input.type = 'number';
-                    input.className = 'timer-input';
-                    input.min = '0';
-                    input.max = String(max);
-                    input.value = String(value);
-                    input.addEventListener('input', () => {
-                        let val = parseInt(input.value, 10);
-                        if (isNaN(val) || val < 0) val = 0;
-                        if (val > max) val = max;
-                        input.value = String(val);
-                        onChange(val);
+                    const inp = document.createElement('input');
+                    inp.type = 'number';
+                    inp.className = 'timer-input';
+                    inp.min = '0';
+                    inp.max = String(max);
+                    inp.value = String(value);
+                    inp.addEventListener('input', () => {
+                        let v = parseInt(inp.value,10);
+                        if (isNaN(v) || v<0) v=0;
+                        if (v>max) v=max;
+                        inp.value = String(v);
+                        onChange(v);
                         setTimerFromInputs();
                     });
-                    input.addEventListener('focus', () => input.select());
-                    group.appendChild(lbl);
-                    group.appendChild(input);
-                    return group;
+                    inp.addEventListener('focus', ()=> inp.select());
+                    g.appendChild(lbl);
+                    g.appendChild(inp);
+                    return g;
                 };
 
-                const hrsGroup = createInputGroup('Hours', timerInputHours, 99, (v) => { timerInputHours = v; });
+                wrapper.appendChild(createGroup('Hours', timerInputHours, 99, v=>timerInputHours=v));
                 const sep1 = document.createElement('span');
                 sep1.className = 'timer-separator';
                 sep1.textContent = ':';
-                const minsGroup = createInputGroup('Minutes', timerInputMinutes, 59, (v) => { timerInputMinutes = v; });
+                wrapper.appendChild(sep1);
+                wrapper.appendChild(createGroup('Minutes', timerInputMinutes, 59, v=>timerInputMinutes=v));
                 const sep2 = document.createElement('span');
                 sep2.className = 'timer-separator';
                 sep2.textContent = ':';
-                const secsGroup = createInputGroup('Seconds', timerInputSeconds, 59, (v) => { timerInputSeconds = v; });
-
-                inputsWrapper.appendChild(hrsGroup);
-                inputsWrapper.appendChild(sep1);
-                inputsWrapper.appendChild(minsGroup);
-                inputsWrapper.appendChild(sep2);
-                inputsWrapper.appendChild(secsGroup);
-                container.appendChild(inputsWrapper);
-
-                // Insert before controls area
+                wrapper.appendChild(sep2);
+                wrapper.appendChild(createGroup('Seconds', timerInputSeconds, 59, v=>timerInputSeconds=v));
+                container.appendChild(wrapper);
                 controlsArea.parentNode.insertBefore(container, controlsArea);
             }
 
-            // ─────────────────────────────────────
-            // SWITCH MODE
-            // ─────────────────────────────────────
+            // ── Mode switching ──────────────────
             function switchMode(mode) {
-                // Clean up
                 if (swInterval) clearInterval(swInterval);
                 swInterval = null;
                 if (swRunning) {
@@ -1018,54 +897,32 @@
 
                 currentMode = mode;
                 body.classList.remove('alert-flash');
-
-                // Update tab buttons
-                document.querySelectorAll('.tab-btn').forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.mode === mode);
-                });
-
-                // Show/hide toggle row
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
                 toggleRow.style.display = mode === 'clock' ? 'flex' : 'none';
 
-                // Remove timer inputs if not in timer mode
-                const timerInputsContainer = document.querySelector('.timer-inputs-container');
-                if (timerInputsContainer && mode !== 'timer') {
-                    timerInputsContainer.remove();
-                }
+                const tc = document.querySelector('.timer-inputs-container');
+                if (tc && mode !== 'timer') tc.remove();
 
-                // Update display
-                if (mode === 'clock') {
-                    updateClockDisplay();
-                } else if (mode === 'stopwatch') {
-                    const formatted = formatStopwatch(swElapsed);
-                    mainDisplay.innerHTML = formatted.main.replace(/:/g, '<span class="colon">:</span>');
-                    subDisplay.textContent = formatted.sub;
-                    subDisplay.classList.remove('flash-warning');
-                } else if (mode === 'timer') {
+                if (mode === 'clock') updateClockDisplay();
+                else if (mode === 'stopwatch') updateStopwatchDisplay();
+                else if (mode === 'timer') {
                     if (timerRemaining <= 0 && timerTotalSeconds === 0) {
-                        timerRemaining = timerInputHours * 3600 + timerInputMinutes * 60 + timerInputSeconds;
+                        timerRemaining = timerInputHours*3600 + timerInputMinutes*60 + timerInputSeconds;
                         timerTotalSeconds = timerRemaining;
                     }
                     updateTimerDisplay();
-                    setTimeout(renderTimerInputs, 100);
+                    setTimeout(renderTimerInputs, 50);
                 }
-
                 renderControls();
-                if (mode === 'timer') {
-                    setTimeout(renderTimerInputs, 150);
-                }
+                if (mode === 'timer') setTimeout(renderTimerInputs, 100);
             }
 
-            // ─────────────────────────────────────
-            // EVENT LISTENERS
-            // ─────────────────────────────────────
-            tabBar.addEventListener('click', (e) => {
+            // ── Event listeners ──────────────────
+            tabBar.addEventListener('click', e => {
                 const btn = e.target.closest('.tab-btn');
                 if (!btn) return;
                 const mode = btn.dataset.mode;
-                if (mode && mode !== currentMode) {
-                    switchMode(mode);
-                }
+                if (mode && mode !== currentMode) switchMode(mode);
             });
 
             formatToggle.addEventListener('click', () => {
@@ -1074,12 +931,8 @@
                 formatToggle.setAttribute('aria-checked', is24Hour);
                 if (currentMode === 'clock') updateClockDisplay();
             });
-
-            formatToggle.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    formatToggle.click();
-                }
+            formatToggle.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); formatToggle.click(); }
             });
 
             timezoneSelect.addEventListener('change', () => {
@@ -1087,24 +940,16 @@
                 if (currentMode === 'clock') updateClockDisplay();
             });
 
-            window.addEventListener('resize', () => {
-                recalcCanvas();
-            });
+            window.addEventListener('resize', () => { recalcCanvas(); });
 
-            // ─────────────────────────────────────
-            // ANIMATION LOOP
-            // ─────────────────────────────────────
+            // ── Animation loop ──────────────────
             function animate() {
                 drawClock();
-                if (currentMode === 'clock') {
-                    updateClockDisplay();
-                }
+                if (currentMode === 'clock') updateClockDisplay();
                 requestAnimationFrame(animate);
             }
 
-            // ─────────────────────────────────────
-            // INITIALIZATION
-            // ─────────────────────────────────────
+            // ── Init ──────────────────────────────
             function init() {
                 recalcCanvas();
                 updateClockDisplay();
@@ -1112,12 +957,10 @@
                 formatToggle.classList.toggle('active', is24Hour);
                 formatToggle.setAttribute('aria-checked', is24Hour);
                 toggleRow.style.display = 'flex';
-                // Initialize timer state
-                timerRemaining = timerInputHours * 3600 + timerInputMinutes * 60 + timerInputSeconds;
+                timerRemaining = timerInputHours*3600 + timerInputMinutes*60 + timerInputSeconds;
                 timerTotalSeconds = timerRemaining;
                 requestAnimationFrame(animate);
             }
-
             init();
         })();
     </script>
