@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Set Up Two-Factor Authentication Without Locking Yourself Out | Runbook</title>
+<meta name="description" content="The correct setup order for two-factor authentication, why authenticator apps beat SMS, and where to actually store backup codes.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-set-up-two-factor-authentication-without-locking-yourself-out.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Operating Systems</span>
+    <h1>How to Set Up Two-Factor Authentication Without Locking Yourself Out</h1>
+    <p class="dek">2FA is one of the highest-value security steps you can take — and one bad setup mistake can permanently lock you out of your own account. Here's the safe order.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Beginner</span></div>
+  <div><span class="k">Time</span><span class="v">10 min per account</span></div>
+  <div><span class="k">Platform</span><span class="v">Any</span></div>
+  <div><span class="k">Category</span><span class="v">Operating Systems</span></div>
+</div>
+
+<article class="body">
+
+<p>Two-factor authentication (2FA) stops the single most common account takeover method: a stolen or reused password alone. The security benefit is well worth ten minutes per account — but people get locked out not because 2FA failed, but because they set it up in the wrong order and lost access to both their second factor and their backup codes at once.</p>
+
+<h2><span class="num">01</span>Choose an authenticator app over SMS where possible</h2>
+<p>SMS-based 2FA is better than no 2FA, but it's vulnerable to SIM-swapping — where an attacker convinces your carrier to transfer your number to their device. An authenticator app (Google Authenticator, Authy, or your password manager's built-in option) generates codes locally on your device instead, with nothing to intercept over the phone network.</p>
+
+<h2><span class="num">02</span>Save backup/recovery codes before you finish setup</h2>
+<p>Every major service gives you a set of one-time backup codes when you enable 2FA — usually shown exactly once, on the setup screen. This is the step people skip because it feels optional. It isn't: if you lose your phone, these codes are often the only way back into your account.</p>
+<ul>
+<li>Save them somewhere that isn't only on the same phone as your authenticator app — a password manager's secure notes feature, or printed and stored somewhere safe.</li>
+<li>Do <strong>not</strong> save them as a photo in your regular camera roll if that roll syncs to a cloud account protected by the same weak password you're trying to fix.</li>
+</ul>
+
+<h2><span class="num">03</span>Set up 2FA on your email account first</h2>
+<p>Most account recovery flows for other services route through email. If your email itself isn't secured with 2FA, it becomes the single point of failure for everything else — protect it first, before any other account.</p>
+
+<h2><span class="num">04</span>If you switch phones, migrate deliberately</h2>
+<p>Authenticator apps generate codes from a secret stored locally — moving to a new phone doesn't carry it over automatically unless you use the app's specific transfer or backup feature before wiping the old device.</p>
+<ul>
+<li><strong>Google Authenticator:</strong> has a built-in "Export accounts" QR-transfer feature — use it before you factory-reset or hand over the old phone.</li>
+<li><strong>Authy:</strong> backs up to the cloud (encrypted with a password you set) by default, which avoids this problem entirely.</li>
+</ul>
+
+<h2><span class="num">05</span>Use hardware keys for your most critical accounts</h2>
+<p>For accounts where a breach would be especially damaging (primary email, financial accounts, your password manager itself), a physical security key (like a YubiKey) is stronger than an app-based code, since it can't be phished — the key checks that it's talking to the real site before responding.</p>
+
+<div class="callout warn">
+<span class="label">The lockout scenario to avoid</span>
+Losing your phone <em>and</em> not having saved your backup codes anywhere else is the scenario that causes permanent lockouts. Confirm your backup codes are saved somewhere independent of the device running your authenticator app before you consider setup finished.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Any setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-an-unsaved-word-document-after-a-crash.html">How to Recover an Unsaved Word Document After a Crash</a></h3>
+  <p>Where Word actually stores AutoRecover and temp files, and the exact folders to check when the recovery pane doesn't show your document.</p>
+  <div class="meta"><span>Beginner</span><span>5–20 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-free-up-space-on-a-mac-when-other-storage-is-huge.html">How to Free Up Space on a Mac When "Other" Storage Is Huge</a></h3>
+  <p>What macOS actually counts as System/Other storage, and the specific folders worth cleaning versus the ones you should leave alone.</p>
+  <div class="meta"><span>Beginner</span><span>15–25 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-files-from-a-corrupted-usb-drive-without-paid-software.html">How to Recover Files from a Corrupted USB Drive Without Paid Software</a></h3>
+  <p>Free, built-in tools to diagnose and recover data from a USB drive that shows as corrupted, unreadable, or asks to be formatted.</p>
+  <div class="meta"><span>Beginner</span><span>15–30 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

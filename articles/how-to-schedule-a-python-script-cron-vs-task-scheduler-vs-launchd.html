@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Schedule a Python Script: Cron vs Task Scheduler vs launchd | Runbook</title>
+<meta name="description" content="Working examples for scheduling Python scripts with cron, Windows Task Scheduler, and macOS launchd, plus the environment-variable issue that breaks most jobs.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-schedule-a-python-script-cron-vs-task-scheduler-vs-launchd.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Dev Tools</span>
+    <h1>How to Schedule a Python Script: Cron vs Task Scheduler vs launchd</h1>
+    <p class="dek">Every OS has a different way to run a script automatically. Here's the correct syntax for each, plus the mistakes that make scheduled jobs silently fail.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Intermediate</span></div>
+  <div><span class="k">Time</span><span class="v">15–25 min</span></div>
+  <div><span class="k">Platform</span><span class="v">Windows / macOS / Linux</span></div>
+  <div><span class="k">Category</span><span class="v">Dev Tools</span></div>
+</div>
+
+<article class="body">
+
+<p>A script that runs perfectly when you type <code>python script.py</code> in your terminal often fails silently when scheduled — not because the schedule is wrong, but because scheduled jobs don't inherit your shell's environment (PATH, virtual environments, working directory). Each platform's method is below, plus the fix for that specific problem.</p>
+
+<h2><span class="num">01</span>Linux/macOS: cron</h2>
+<p>Open your crontab:</p>
+<pre><code>crontab -e</code></pre>
+<p>Add a line for, say, running a script every day at 6:30 AM:</p>
+<pre><code>30 6 * * * /usr/bin/python3 /home/user/scripts/backup.py >> /home/user/scripts/backup.log 2>&1</code></pre>
+<p>Two details that matter: use the <strong>full path</strong> to both the Python interpreter and the script (find it with <code>which python3</code>), and redirect output to a log file — otherwise, when the job fails, you'll have no idea why.</p>
+
+<h2><span class="num">02</span>Windows: Task Scheduler</h2>
+<ol>
+<li>Open Task Scheduler → Create Task (not "Basic Task" — it hides useful options).</li>
+<li>General tab: check "Run whether user is logged on or not" if it needs to work while you're logged out.</li>
+<li>Triggers tab: New → set your schedule.</li>
+<li>Actions tab: New → Program/script: the full path to <code>python.exe</code> (find it with <code>where python</code> in Command Prompt). Add arguments: the full path to your script, in quotes.</li>
+<li>Set "Start in" to your script's folder — this fixes relative file paths inside the script that otherwise break.</li>
+</ol>
+
+<h2><span class="num">03</span>macOS: launchd</h2>
+<p>Cron technically still works on macOS but Apple's own scheduler, launchd, is more reliable for tasks that need to survive sleep/wake cycles. Create a plist file:</p>
+<pre><code>nano ~/Library/LaunchAgents/com.user.backup.plist</code></pre>
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+  &lt;key&gt;Label&lt;/key&gt;
+  &lt;string&gt;com.user.backup&lt;/string&gt;
+  &lt;key&gt;ProgramArguments&lt;/key&gt;
+  &lt;array&gt;
+    &lt;string&gt;/usr/bin/python3&lt;/string&gt;
+    &lt;string&gt;/Users/you/scripts/backup.py&lt;/string&gt;
+  &lt;/array&gt;
+  &lt;key&gt;StartCalendarInterval&lt;/key&gt;
+  &lt;dict&gt;
+    &lt;key&gt;Hour&lt;/key&gt;&lt;integer&gt;6&lt;/integer&gt;
+    &lt;key&gt;Minute&lt;/key&gt;&lt;integer&gt;30&lt;/integer&gt;
+  &lt;/dict&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;</code></pre>
+<p>Load it:</p>
+<pre><code>launchctl load ~/Library/LaunchAgents/com.user.backup.plist</code></pre>
+
+<h2><span class="num">04</span>The virtual environment trap</h2>
+<p>If your script depends on packages installed in a virtual environment, calling the system Python directly will fail with <code>ModuleNotFoundError</code> even though it works in your terminal. Point the scheduler at the interpreter <em>inside</em> the venv instead:</p>
+<pre><code>/home/user/myproject/venv/bin/python3 /home/user/myproject/backup.py</code></pre>
+<p>This one line fixes the single most common reason scheduled Python jobs work manually but fail when automated.</p>
+
+<div class="callout">
+<span class="label">Always test this way first</span>
+Before trusting any schedule, temporarily set it to run two minutes from now and check the log file or Task Scheduler's history tab. It's much faster to catch a broken path this way than to find out tomorrow that nothing ran.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Windows / macOS / Linux setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-set-up-a-reverse-proxy-with-nginx-for-a-home-server.html">How to Set Up a Reverse Proxy with Nginx for a Home Server</a></h3>
+  <p>Set up Nginx as a reverse proxy so multiple self-hosted apps on different ports are reachable through clean subdomains, with HTTPS via Certbot.</p>
+  <div class="meta"><span>Intermediate</span><span>30–40 min</span></div>
+</div><div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-migrate-a-wordpress-site-to-a-new-host-without-downtime.html">How to Migrate a WordPress Site to a New Host Without Downtime</a></h3>
+  <p>A step-by-step WordPress migration sequence that keeps your old site live and serving traffic until the new host is fully verified and DNS has propagated.</p>
+  <div class="meta"><span>Intermediate</span><span>1–2 hours</span></div>
+</div><div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-set-up-a-local-development-environment-with-docker-compose.html">How to Set Up a Local Development Environment with Docker Compose</a></h3>
+  <p>A working docker-compose.yml for a typical app + database + cache stack, plus the volume and networking details that trip people up first.</p>
+  <div class="meta"><span>Intermediate</span><span>20–30 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

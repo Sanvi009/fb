@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Fix Bluetooth Devices That Keep Disconnecting | Runbook</title>
+<meta name="description" content="The specific power-management and interference settings behind Bluetooth devices that randomly disconnect, with separate fixes for Windows and macOS.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-fix-bluetooth-devices-that-keep-disconnecting.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Operating Systems</span>
+    <h1>How to Fix Bluetooth Devices That Keep Disconnecting</h1>
+    <p class="dek">Intermittent Bluetooth dropouts usually trace back to power management or interference, not a failing device. Both are fixable in a few minutes.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Beginner</span></div>
+  <div><span class="k">Time</span><span class="v">10–15 min</span></div>
+  <div><span class="k">Platform</span><span class="v">Windows / macOS</span></div>
+  <div><span class="k">Category</span><span class="v">Operating Systems</span></div>
+</div>
+
+<article class="body">
+
+<p>A Bluetooth device — headphones, a mouse, a keyboard — that connects fine but drops out randomly is rarely a hardware fault in the device itself. Two causes account for most cases: the OS aggressively powering down the Bluetooth radio to save energy, and physical interference from other 2.4GHz devices.</p>
+
+<h2><span class="num">01</span>Windows: stop Windows from powering off the Bluetooth adapter</h2>
+<ol>
+<li>Device Manager → Bluetooth → find your adapter (often named after its chipset, like "Intel Wireless Bluetooth").</li>
+<li>Right-click → Properties → Power Management tab.</li>
+<li>Uncheck "Allow the computer to turn off this device to save power."</li>
+</ol>
+<p>This is the single most common fix for random, intermittent drops on laptops specifically — Windows' default power plan actively powers the radio down when it judges usage as idle, even mid-use.</p>
+
+<h2><span class="num">02</span>macOS: reset the Bluetooth module</h2>
+<p>A soft reset clears a corrupted internal Bluetooth state without needing a full restart:</p>
+<ol>
+<li>Hold Shift+Option and click the Bluetooth icon in the menu bar.</li>
+<li>Choose "Reset the Bluetooth module."</li>
+</ol>
+<p>Re-pair your device afterward — this clears saved connection data along with the reset.</p>
+
+<h2><span class="num">03</span>Check for 2.4GHz interference</h2>
+<p>Bluetooth shares the same 2.4GHz frequency band as most Wi-Fi routers, USB 3.0 ports (their shielding can leak noise in this exact range), and microwaves. If dropouts correlate with proximity to a router or a USB 3.0 hub/drive, that's a strong sign of interference, not a software issue.</p>
+<ul>
+<li>Move the Bluetooth receiver/dongle away from USB 3.0 ports if you're using an external one — a short USB extension cable is a cheap, effective fix.</li>
+<li>If your router supports it, check whether it's set to the 2.4GHz band specifically for Wi-Fi and consider switching your Wi-Fi to 5GHz where possible, freeing up 2.4GHz interference.</li>
+</ul>
+
+<h2><span class="num">04</span>Update the Bluetooth driver directly from the manufacturer</h2>
+<p>Windows Update sometimes lags behind the actual chipset manufacturer's driver releases. Check Intel, Realtek, or your laptop manufacturer's support site directly for a driver newer than what Device Manager shows, particularly if the problem started right after a Windows feature update.</p>
+
+<h2><span class="num">05</span>Forget and re-pair as a last resort</h2>
+<p>If none of the above helps, remove the device from Bluetooth settings entirely (not just disconnect) and re-pair from scratch. This clears any corrupted pairing data that can accumulate over time, especially on devices that have been paired to multiple computers.</p>
+
+<div class="callout">
+<span class="label">If it's specifically a gaming mouse or headset</span>
+Many gaming peripherals include a proprietary USB dongle that uses a more stable, lower-latency 2.4GHz connection instead of standard Bluetooth — if yours came with one, use it instead of standard Bluetooth pairing, since it's generally more reliable for exactly this kind of dropout issue.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Windows / macOS setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-an-unsaved-word-document-after-a-crash.html">How to Recover an Unsaved Word Document After a Crash</a></h3>
+  <p>Where Word actually stores AutoRecover and temp files, and the exact folders to check when the recovery pane doesn't show your document.</p>
+  <div class="meta"><span>Beginner</span><span>5–20 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-free-up-space-on-a-mac-when-other-storage-is-huge.html">How to Free Up Space on a Mac When "Other" Storage Is Huge</a></h3>
+  <p>What macOS actually counts as System/Other storage, and the specific folders worth cleaning versus the ones you should leave alone.</p>
+  <div class="meta"><span>Beginner</span><span>15–25 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-files-from-a-corrupted-usb-drive-without-paid-software.html">How to Recover Files from a Corrupted USB Drive Without Paid Software</a></h3>
+  <p>Free, built-in tools to diagnose and recover data from a USB drive that shows as corrupted, unreadable, or asks to be formatted.</p>
+  <div class="meta"><span>Beginner</span><span>15–30 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

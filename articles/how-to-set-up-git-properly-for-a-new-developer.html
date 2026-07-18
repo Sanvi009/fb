@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Set Up Git Properly for a New Developer | Runbook</title>
+<meta name="description" content="The essential Git configuration steps beyond installation — identity, SSH keys, line-ending settings, and default branch — that prevent common early mistakes.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-set-up-git-properly-for-a-new-developer.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Dev Tools</span>
+    <h1>How to Set Up Git Properly for a New Developer</h1>
+    <p class="dek">The default Git setup after installing is incomplete in ways that cause confusing errors weeks later. Here's the config every new machine actually needs.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Beginner</span></div>
+  <div><span class="k">Time</span><span class="v">10–15 min</span></div>
+  <div><span class="k">Platform</span><span class="v">Any</span></div>
+  <div><span class="k">Category</span><span class="v">Dev Tools</span></div>
+</div>
+
+<article class="body">
+
+<p>Installing Git and running <code>git clone</code> works immediately, which is exactly why the setup gaps don't show up until later — a commit under the wrong name, a permission error pushing to GitHub, or a wall of line-ending noise in a diff. Doing this setup once, in order, avoids all of them.</p>
+
+<h2><span class="num">01</span>Set your identity</h2>
+<p>Every commit is signed with a name and email; skip this and Git either refuses to commit or uses a generic placeholder that makes your commit history useless for blame/history purposes.</p>
+<pre><code>git config --global user.name "Your Name"
+git config --global user.email "you@example.com"</code></pre>
+<p>Use the same email associated with your GitHub/GitLab account so commits link to your profile correctly.</p>
+
+<h2><span class="num">02</span>Set up SSH authentication instead of typing your password every push</h2>
+<p>GitHub and GitLab no longer accept plain passwords for pushes over HTTPS at all — you need either SSH keys or a personal access token. SSH is the more durable setup:</p>
+<pre><code>ssh-keygen -t ed25519 -C "you@example.com"</code></pre>
+<p>Add the resulting public key (<code>~/.ssh/id_ed25519.pub</code>) to GitHub under Settings → SSH and GPG keys. Test it:</p>
+<pre><code>ssh -T git@github.com</code></pre>
+
+<h2><span class="num">03</span>Fix line endings before they cause fake diffs</h2>
+<p>Windows and Mac/Linux use different line-ending characters by default. Without this setting, files can show as "changed" in a diff when nothing meaningfully changed — just the line endings — which creates noisy, confusing pull requests.</p>
+<ul>
+<li><strong>Windows:</strong> <code>git config --global core.autocrlf true</code></li>
+<li><strong>Mac/Linux:</strong> <code>git config --global core.autocrlf input</code></li>
+</ul>
+
+<h2><span class="num">04</span>Set your default branch name</h2>
+<p>Recent Git versions default to <code>master</code> unless configured otherwise, while most hosted platforms now default new repos to <code>main</code> — a small mismatch that occasionally trips up first pushes.</p>
+<pre><code>git config --global init.defaultBranch main</code></pre>
+
+<h2><span class="num">05</span>Set a default editor that isn't Vim, unless you actually know Vim</h2>
+<p>Git's default commit-message editor on many systems is Vim, and if you've never used it, a mistyped commit can leave you stuck in an editor you don't know how to exit (the answer, for the record, is <code>Esc</code> then type <code>:wq</code>). Set something familiar instead:</p>
+<pre><code>git config --global core.editor "code --wait"</code></pre>
+<p>(Substitute your editor of choice — this example uses VS Code.)</p>
+
+<h2><span class="num">06</span>Verify everything at once</h2>
+<pre><code>git config --list</code></pre>
+<p>Check that identity, default branch, and line-ending settings all show the values you expect before your first real commit.</p>
+
+<div class="callout">
+<span class="label">One more habit worth building early</span>
+Add a <code>.gitignore</code> file to every new project before your first commit, not after. GitHub's <a href="https://github.com/github/gitignore">gitignore template repository</a> has one for nearly every language — removing an accidentally committed file later (like a credentials file) requires rewriting history, not just deleting it.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Any setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-set-up-a-reverse-proxy-with-nginx-for-a-home-server.html">How to Set Up a Reverse Proxy with Nginx for a Home Server</a></h3>
+  <p>Set up Nginx as a reverse proxy so multiple self-hosted apps on different ports are reachable through clean subdomains, with HTTPS via Certbot.</p>
+  <div class="meta"><span>Intermediate</span><span>30–40 min</span></div>
+</div><div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-schedule-a-python-script-cron-vs-task-scheduler-vs-launchd.html">How to Schedule a Python Script: Cron vs Task Scheduler vs launchd</a></h3>
+  <p>Working examples for scheduling Python scripts with cron, Windows Task Scheduler, and macOS launchd, plus the environment-variable issue that breaks most jobs.</p>
+  <div class="meta"><span>Intermediate</span><span>15–25 min</span></div>
+</div><div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-migrate-a-wordpress-site-to-a-new-host-without-downtime.html">How to Migrate a WordPress Site to a New Host Without Downtime</a></h3>
+  <p>A step-by-step WordPress migration sequence that keeps your old site live and serving traffic until the new host is fully verified and DNS has propagated.</p>
+  <div class="meta"><span>Intermediate</span><span>1–2 hours</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

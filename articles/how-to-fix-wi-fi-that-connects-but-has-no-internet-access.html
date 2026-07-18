@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Fix Wi-Fi That Connects But Has No Internet Access | Runbook</title>
+<meta name="description" content="A structured way to tell apart router, modem, DNS, and IP-address problems when Wi-Fi shows connected but nothing loads.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-fix-wi-fi-that-connects-but-has-no-internet-access.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Networking</span>
+    <h1>How to Fix Wi-Fi That Connects But Has No Internet Access</h1>
+    <p class="dek">"Connected, no internet" means your device reached the router but the router isn't reaching the internet — or isn't handing out a real address. Here's how to tell which.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Beginner</span></div>
+  <div><span class="k">Time</span><span class="v">10–15 min</span></div>
+  <div><span class="k">Platform</span><span class="v">Windows / macOS / Router</span></div>
+  <div><span class="k">Category</span><span class="v">Networking</span></div>
+</div>
+
+<article class="body">
+
+<p>"Connected, no internet access" is a symptom, not a diagnosis — it can mean five different things, and each has a different fix. Working through these in order rules causes in or out quickly instead of restarting things at random.</p>
+
+<h2><span class="num">01</span>Check whether it's one device or all of them</h2>
+<p>Try another phone, laptop, or tablet on the same Wi-Fi. If every device is affected, the problem is your router or modem — skip to Step 4. If it's only one device, the problem is local to that device — continue to Step 2.</p>
+
+<h2><span class="num">02</span>Check for a self-assigned IP address</h2>
+<p>When a device can't reach the router's DHCP server, it assigns itself a fallback address, which looks connected but has no real routing.</p>
+<ul>
+<li><strong>Windows:</strong> open Command Prompt, run <code>ipconfig</code>. If the IPv4 address starts with <code>169.254</code>, that's the problem.</li>
+<li><strong>macOS:</strong> System Settings → Wi-Fi → Details. An address starting with <code>169.254</code> means the same thing.</li>
+</ul>
+<p>Fix: forget the network, then reconnect. If it happens repeatedly, restart the router — its DHCP service may have run out of leases or hung.</p>
+
+<h2><span class="num">03</span>Rule out DNS specifically</h2>
+<p>A very common pattern: browsers fail, but games or apps that use a raw IP still connect. That points to DNS, not a dead connection.</p>
+<p>Test it directly. Open a terminal and run:</p>
+<pre><code>ping 8.8.8.8</code></pre>
+<p>If that gets replies but <code>ping google.com</code> fails, DNS is broken specifically. Fix by switching your DNS servers to <code>1.1.1.1</code> and <code>8.8.8.8</code> in your network adapter settings, or directly in the router's WAN settings so it applies to every device.</p>
+
+<h2><span class="num">04</span>Restart modem and router — in the right order</h2>
+<p>Order matters here, and it's usually done backwards:</p>
+<ol>
+<li>Unplug the router first.</li>
+<li>Unplug the modem. Wait 30 seconds.</li>
+<li>Plug the modem back in and wait until its lights show a stable connection (usually 1–2 minutes).</li>
+<li>Only then plug the router back in.</li>
+</ol>
+<p>This lets the modem fully re-establish its connection with your ISP before the router tries to use it.</p>
+
+<h2><span class="num">05</span>Check if your ISP is the actual problem</h2>
+<p>If a restart doesn't help, connect a laptop directly to the modem with an Ethernet cable, bypassing the router entirely. If there's still no internet, the outage is upstream — check your provider's status page or outage line before troubleshooting your equipment further.</p>
+
+<table>
+<tr><th>Test result</th><th>Points to</th></tr>
+<tr><td>169.254.x.x address</td><td>DHCP / router-side lease issue</td></tr>
+<tr><td>Ping by IP works, by name fails</td><td>DNS</td></tr>
+<tr><td>Nothing works even wired to modem</td><td>ISP outage</td></tr>
+<tr><td>Only one device affected</td><td>Device network stack — try forgetting and rejoining the network</td></tr>
+</table>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Windows / macOS / Router setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/err-ssl-protocol-error-chrome.html">How to Fix ERR_SSL_PROTOCOL_ERROR in Chrome Without Reinstalling</a></h3>
+  <p>A step-by-step way to diagnose ERR_SSL_PROTOCOL_ERROR by isolating clock, extension, antivirus, and server causes instead of guessing.</p>
+  <div class="meta"><span>Beginner</span><span>10–15 min</span></div>
+</div><div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/how-to-set-up-ssh-key-authentication-and-disable-password-login.html">How to Set Up SSH Key Authentication and Disable Password Login</a></h3>
+  <p>Generate an SSH key pair, install it on your server, and safely disable password authentication — with the ordering that prevents lockouts.</p>
+  <div class="meta"><span>Intermediate</span><span>15–20 min</span></div>
+</div><div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/how-to-fix-this-site-can-t-provide-a-secure-connection.html">How to Fix "This Site Can't Provide a Secure Connection"</a></h3>
+  <p>How to read the certificate details behind this Chrome/Edge error to find the real cause in under a minute, plus what each error code actually means.</p>
+  <div class="meta"><span>Beginner</span><span>5–10 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

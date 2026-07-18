@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Set Up a Personal VPN Server Instead of Paying for One | Runbook</title>
+<meta name="description" content="Set up your own WireGuard VPN server on a cheap VPS in about 20 minutes, with the tradeoffs versus a commercial VPN service explained honestly.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-set-up-a-personal-vpn-server-instead-of-paying-for-one.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Networking</span>
+    <h1>How to Set Up a Personal VPN Server Instead of Paying for One</h1>
+    <p class="dek">A self-hosted VPN gives you the core benefit — encrypted traffic on public Wi-Fi — without a monthly subscription, using a $5/month VPS.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Intermediate</span></div>
+  <div><span class="k">Time</span><span class="v">20–30 min</span></div>
+  <div><span class="k">Platform</span><span class="v">Linux VPS</span></div>
+  <div><span class="k">Category</span><span class="v">Networking</span></div>
+</div>
+
+<article class="body">
+
+<p>Commercial VPN services bundle two different things: encrypting your traffic on untrusted networks, and masking your location behind a shared pool of IPs to get around geographic restrictions. A self-hosted VPN gives you the first, fully and for a few dollars a month in server costs — but not the second, since the traffic still exits from a server that's identifiably yours, not a shared pool. If your goal is "encrypt my traffic on coffee shop Wi-Fi," this is a complete solution.</p>
+
+<h2><span class="num">01</span>Get a cheap VPS</h2>
+<p>Any provider works — DigitalOcean, Linode, Hetzner, Vultr all offer VPS instances for around $4-6/month, which is more than enough for personal VPN traffic. Choose a location close to where you'll actually be using it, for lower latency.</p>
+
+<h2><span class="num">02</span>Install WireGuard</h2>
+<p>WireGuard is the modern standard for this — simpler to configure and faster than older options like OpenVPN.</p>
+<pre><code>sudo apt update && sudo apt install wireguard</code></pre>
+
+<h2><span class="num">03</span>Generate server keys</h2>
+<pre><code>wg genkey | sudo tee /etc/wireguard/server_private.key | wg pubkey | sudo tee /etc/wireguard/server_public.key</code></pre>
+
+<h2><span class="num">04</span>Create the server config</h2>
+<pre><code>sudo nano /etc/wireguard/wg0.conf</code></pre>
+<pre><code>[Interface]
+PrivateKey = [contents of server_private.key]
+Address = 10.0.0.1/24
+ListenPort = 51820
+PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE</code></pre>
+<p>Enable IP forwarding so the server can route your traffic onward to the internet:</p>
+<pre><code>echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p</code></pre>
+
+<h2><span class="num">05</span>Add a client (your phone or laptop)</h2>
+<p>Generate a key pair for the client the same way as Step 3, then add a peer block to <code>wg0.conf</code>:</p>
+<pre><code>[Peer]
+PublicKey = [client's public key]
+AllowedIPs = 10.0.0.2/32</code></pre>
+<p>On the client side, use the official WireGuard app (available for iOS, Android, Windows, macOS) and create a matching config pointing at your server's public IP and port 51820.</p>
+
+<h2><span class="num">06</span>Start it and open the firewall port</h2>
+<pre><code>sudo wg-quick up wg0
+sudo systemctl enable wg-quick@wg0
+sudo ufw allow 51820/udp</code></pre>
+
+<h2><span class="num">07</span>Test it</h2>
+<p>Connect from your client device and check your IP at any "what's my IP" site — it should show your VPS's IP address, confirming traffic is routing through the server.</p>
+
+<div class="callout">
+<span class="label">Honest tradeoff versus a commercial VPN</span>
+Your self-hosted VPN's IP is uniquely yours and unchanging, which is actually worse for privacy from the destination site's perspective than a commercial VPN's shared IP pool — sites can still identify and track "your" IP over time, they just can't see your ISP or physical location as easily. For the specific goal of securing traffic on untrusted networks, this setup is complete; for anonymity from the sites you visit, it isn't equivalent to a commercial service.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Linux VPS setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/err-ssl-protocol-error-chrome.html">How to Fix ERR_SSL_PROTOCOL_ERROR in Chrome Without Reinstalling</a></h3>
+  <p>A step-by-step way to diagnose ERR_SSL_PROTOCOL_ERROR by isolating clock, extension, antivirus, and server causes instead of guessing.</p>
+  <div class="meta"><span>Beginner</span><span>10–15 min</span></div>
+</div><div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/how-to-set-up-ssh-key-authentication-and-disable-password-login.html">How to Set Up SSH Key Authentication and Disable Password Login</a></h3>
+  <p>Generate an SSH key pair, install it on your server, and safely disable password authentication — with the ordering that prevents lockouts.</p>
+  <div class="meta"><span>Intermediate</span><span>15–20 min</span></div>
+</div><div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/how-to-fix-wi-fi-that-connects-but-has-no-internet-access.html">How to Fix Wi-Fi That Connects But Has No Internet Access</a></h3>
+  <p>A structured way to tell apart router, modem, DNS, and IP-address problems when Wi-Fi shows connected but nothing loads.</p>
+  <div class="meta"><span>Beginner</span><span>10–15 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

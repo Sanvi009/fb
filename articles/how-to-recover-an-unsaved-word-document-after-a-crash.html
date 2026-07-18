@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Recover an Unsaved Word Document After a Crash | Runbook</title>
+<meta name="description" content="Where Word actually stores AutoRecover and temp files, and the exact folders to check when the recovery pane doesn't show your document.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-recover-an-unsaved-word-document-after-a-crash.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Operating Systems</span>
+    <h1>How to Recover an Unsaved Word Document After a Crash</h1>
+    <p class="dek">Word keeps temporary backups in more places than the AutoRecover popup checks. Here's every location worth searching, in order of likelihood.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Beginner</span></div>
+  <div><span class="k">Time</span><span class="v">5–20 min</span></div>
+  <div><span class="k">Platform</span><span class="v">Windows / macOS</span></div>
+  <div><span class="k">Category</span><span class="v">Operating Systems</span></div>
+</div>
+
+<article class="body">
+
+<p>When Word crashes and the AutoRecover pane doesn't show your file, most people assume it's gone. It usually isn't — Word writes several different kinds of temporary files as you type, and they don't all show up in the same place. This walks through each location in the order you're most likely to find something.</p>
+
+<h2><span class="num">01</span>Reopen Word first</h2>
+<p>Before searching manually, just relaunch Word. If it detects an unclean shutdown, it opens a "Document Recovery" pane on the left automatically. Save anything listed there immediately with a new name — don't trust it to still be there next time you open Word.</p>
+
+<h2><span class="num">02</span>Check the AutoRecover file folder directly</h2>
+<p>If the pane didn't appear, the AutoRecover file itself might still be sitting in its folder.</p>
+<ul>
+<li><strong>Windows:</strong> <code>C:\Users\[username]\AppData\Roaming\Microsoft\Word</code></li>
+<li><strong>macOS:</strong> <code>~/Library/Containers/com.microsoft.Word/Data/Library/Preferences/AutoRecovery</code></li>
+</ul>
+<p>Look for files ending in <code>.asd</code> (Windows) or starting with "AutoRecovery save of" (Mac). Open Word, go to File → Open, and point it directly at the file.</p>
+
+<h2><span class="num">03</span>Search for temp files</h2>
+<p>While you're typing, Word also writes hidden temp files that sometimes survive a crash even when AutoRecover doesn't.</p>
+<ol>
+<li>Open File Explorer or Finder.</li>
+<li>Search your user folder (or the folder your document was originally saved in) for files starting with <code>~</code> or <code>~WRL</code>.</li>
+<li>These are often locked or partial, but they can be renamed and reopened — try changing the extension to <code>.docx</code> if it isn't already.</li>
+</ol>
+
+<h2><span class="num">04</span>Check File → Info → Manage Document</h2>
+<p>If you had the document open at some point during the current Word session (even before the crash, in a related session), open Word, go to File → Info, and look for a "Manage Document" or "Recover Unsaved Documents" button. This pulls from a separate unsaved-files cache that's distinct from AutoRecover.</p>
+
+<h2><span class="num">05</span>Check OneDrive or SharePoint version history</h2>
+<p>If your Word file lives in a OneDrive or SharePoint folder — even if you don't remember saving — Office silently syncs versions in the background. Right-click the file in File Explorer or the OneDrive web app and choose "Version history."</p>
+
+<div class="callout">
+<span class="label">Prevent this next time</span>
+Go to File → Options → Save and set "Save AutoRecover information" to 1 minute instead of the 10-minute default. It has no noticeable performance cost on modern hardware and cuts your worst-case data loss to almost nothing.
+</div>
+
+<div class="callout warn">
+<span class="label">If nothing above works</span>
+Don't run random "Word repair" tools you download from search results — several bundle adware. If the document truly isn't in any of the locations above, it wasn't saved to disk in any form, and no software can recover text that was never written.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Windows / macOS setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-free-up-space-on-a-mac-when-other-storage-is-huge.html">How to Free Up Space on a Mac When "Other" Storage Is Huge</a></h3>
+  <p>What macOS actually counts as System/Other storage, and the specific folders worth cleaning versus the ones you should leave alone.</p>
+  <div class="meta"><span>Beginner</span><span>15–25 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-files-from-a-corrupted-usb-drive-without-paid-software.html">How to Recover Files from a Corrupted USB Drive Without Paid Software</a></h3>
+  <p>Free, built-in tools to diagnose and recover data from a USB drive that shows as corrupted, unreadable, or asks to be formatted.</p>
+  <div class="meta"><span>Beginner</span><span>15–30 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-set-up-two-factor-authentication-without-locking-yourself-out.html">How to Set Up Two-Factor Authentication Without Locking Yourself Out</a></h3>
+  <p>The correct setup order for two-factor authentication, why authenticator apps beat SMS, and where to actually store backup codes.</p>
+  <div class="meta"><span>Beginner</span><span>10 min per account</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

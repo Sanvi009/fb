@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Back Up Your Phone Photos Automatically Without Paying for Cloud Storage | Runbook</title>
+<meta name="description" content="Set up automatic photo backups to a computer or home NAS using tools that already exist on your phone and computer, with no subscription.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-back-up-your-phone-photos-automatically-without-paying-for-cloud-storage.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Operating Systems</span>
+    <h1>How to Back Up Your Phone Photos Automatically Without Paying for Cloud Storage</h1>
+    <p class="dek">Free cloud tiers run out fast, but a local backup routine can be just as automatic — and has no monthly bill or storage cap.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Beginner</span></div>
+  <div><span class="k">Time</span><span class="v">20 min setup</span></div>
+  <div><span class="k">Platform</span><span class="v">iPhone / Android</span></div>
+  <div><span class="k">Category</span><span class="v">Operating Systems</span></div>
+</div>
+
+<article class="body">
+
+<p>Paid cloud photo storage is convenient but recurring, and most free tiers (5–15GB) fill up within a year of regular phone use. An automatic local backup — to a computer you already own, or a home NAS — costs nothing ongoing and has no arbitrary storage ceiling beyond your own drive space.</p>
+
+<h2><span class="num">01</span>iPhone → Windows PC (automatic, wired or Wi-Fi)</h2>
+<p>The Photos app on Windows can auto-import from a connected iPhone. For a fully automatic wireless version, iCloud for Windows can be set to only download originals to a local folder without keeping them in iCloud long-term — under iCloud Photos settings, choose "Download Photos and Videos" without "Upload."</p>
+
+<h2><span class="num">02</span>iPhone → Mac (automatic, no cables after first setup)</h2>
+<p>Photos app on Mac: Photos → Settings → iCloud → uncheck "iCloud Photos," but enable "Import to: [a folder of your choice]" under File → Import preferences won't auto-run without the app open — instead, keep Photos app set to auto-launch when your iPhone connects, or use the free app "Image Capture" (built into macOS) with its own auto-import folder set for wireless transfer over the same Wi-Fi network.</p>
+
+<h2><span class="num">03</span>Android → any computer</h2>
+<p>Android's built-in "USB file transfer" mode lets File Explorer or Finder see your phone as a drive — the DCIM folder holds your photos. For automatic wireless sync without cables, the free and open-source Syncthing app runs on both your phone and computer, watching your camera folder and copying new photos over your home network the moment they're taken, with no cloud step in between at all.</p>
+
+<h2><span class="num">04</span>The more resilient option: sync to a home NAS</h2>
+<p>If you have a NAS (Synology, QNAP, or a self-built one), both platforms offer free companion apps — Synology Photos and QNAP QuMagie — that auto-upload from your phone over Wi-Fi whenever you're home, giving you a backup that survives even if your main computer fails, since it's a separate device.</p>
+
+<h2><span class="num">05</span>Follow the 3-2-1 rule even with a free setup</h2>
+<p>A single local backup is much better than none, but it's still one point of failure (fire, theft, drive failure). The standard practice: <strong>3</strong> copies of your data, on <strong>2</strong> different types of storage, with <strong>1</strong> copy offsite. A practical free version: phone (copy 1) → computer (copy 2, different storage) → an external drive kept at a different location, like a relative's house, updated every few months (copy 3, offsite).</p>
+
+<div class="callout">
+<span class="label">Don't rely on this alone</span>
+"Automatic" backup tools can silently stop working — a disconnected drive, a paused app, an expired permission. Check that new photos are actually appearing in your backup location every month or two, rather than assuming it's still running.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live iPhone / Android setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-an-unsaved-word-document-after-a-crash.html">How to Recover an Unsaved Word Document After a Crash</a></h3>
+  <p>Where Word actually stores AutoRecover and temp files, and the exact folders to check when the recovery pane doesn't show your document.</p>
+  <div class="meta"><span>Beginner</span><span>5–20 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-free-up-space-on-a-mac-when-other-storage-is-huge.html">How to Free Up Space on a Mac When "Other" Storage Is Huge</a></h3>
+  <p>What macOS actually counts as System/Other storage, and the specific folders worth cleaning versus the ones you should leave alone.</p>
+  <div class="meta"><span>Beginner</span><span>15–25 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-files-from-a-corrupted-usb-drive-without-paid-software.html">How to Recover Files from a Corrupted USB Drive Without Paid Software</a></h3>
+  <p>Free, built-in tools to diagnose and recover data from a USB drive that shows as corrupted, unreadable, or asks to be formatted.</p>
+  <div class="meta"><span>Beginner</span><span>15–30 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

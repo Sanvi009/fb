@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Fix "This Site Can't Provide a Secure Connection" | Runbook</title>
+<meta name="description" content="How to read the certificate details behind this Chrome/Edge error to find the real cause in under a minute, plus what each error code actually means.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-fix-this-site-can-t-provide-a-secure-connection.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Networking</span>
+    <h1>How to Fix "This Site Can't Provide a Secure Connection"</h1>
+    <p class="dek">This error usually points to a certificate name mismatch or an expired cert — and there's a one-click way to see exactly which, before you touch any settings.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Beginner</span></div>
+  <div><span class="k">Time</span><span class="v">5–10 min</span></div>
+  <div><span class="k">Platform</span><span class="v">Any browser</span></div>
+  <div><span class="k">Category</span><span class="v">Networking</span></div>
+</div>
+
+<article class="body">
+
+<p>This error hides a more specific one behind an extra click. Before trying any fix, get the real error code — it changes what you should do next entirely.</p>
+
+<h2><span class="num">01</span>Reveal the specific error code</h2>
+<p>Click "Advanced" on the error page. Chrome and Edge show a short code like <code>NET::ERR_CERT_DATE_INVALID</code> or <code>NET::ERR_CERT_COMMON_NAME_INVALID</code>. This tells you exactly what's wrong instead of guessing.</p>
+
+<table>
+<tr><th>Code</th><th>Meaning</th><th>Who can fix it</th></tr>
+<tr><td>ERR_CERT_DATE_INVALID</td><td>Certificate expired, or your system clock is wrong</td><td>You (clock) or site owner (cert)</td></tr>
+<tr><td>ERR_CERT_COMMON_NAME_INVALID</td><td>Certificate doesn't match the domain you typed</td><td>Site owner</td></tr>
+<tr><td>ERR_CERT_AUTHORITY_INVALID</td><td>Certificate wasn't issued by a trusted authority (often self-signed)</td><td>Site owner, or expected if it's your own internal server</td></tr>
+<tr><td>ERR_SSL_VERSION_OR_CIPHER_MISMATCH</td><td>Server only supports an outdated TLS version</td><td>Site owner</td></tr>
+</table>
+
+<h2><span class="num">02</span>If it's ERR_CERT_DATE_INVALID, check your clock first</h2>
+<p>This is the one case that's frequently your fault, not the site's. Confirm your system date, time, and timezone are correct and set to update automatically, then reload. See the "system clock" steps in our <a href="err-ssl-protocol-error-chrome.html">SSL protocol error guide</a> for exact menu paths.</p>
+
+<h2><span class="num">03</span>If it's COMMON_NAME_INVALID or AUTHORITY_INVALID</h2>
+<p>These mean the certificate itself doesn't match or isn't trusted — this is not something to work around by clicking "proceed anyway" on a site handling anything sensitive (banking, login credentials, payment details). For a low-stakes internal tool or home server you manage yourself, self-signed certificates are expected and proceeding is reasonable. For anything else, treat it as a real warning and don't enter data on the site until it's fixed.</p>
+
+<h2><span class="num">04</span>Test from a different network</h2>
+<p>If you're on office, school, or hotel Wi-Fi, some networks intercept HTTPS traffic for content filtering using their own certificate, which browsers correctly flag as untrusted. Try the same site on mobile data. If it works there, the certificate itself is fine — the issue is network-level interception, and there's no user-side fix beyond using a different network.</p>
+
+<div class="callout warn">
+<span class="label">Don't do this</span>
+Don't disable certificate checking system-wide, install random "SSL fix" tools, or add browser flags like <code>--ignore-certificate-errors</code> as a permanent habit. These remove protection from every site, not just the one giving you trouble.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Any browser setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/err-ssl-protocol-error-chrome.html">How to Fix ERR_SSL_PROTOCOL_ERROR in Chrome Without Reinstalling</a></h3>
+  <p>A step-by-step way to diagnose ERR_SSL_PROTOCOL_ERROR by isolating clock, extension, antivirus, and server causes instead of guessing.</p>
+  <div class="meta"><span>Beginner</span><span>10–15 min</span></div>
+</div><div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/how-to-set-up-ssh-key-authentication-and-disable-password-login.html">How to Set Up SSH Key Authentication and Disable Password Login</a></h3>
+  <p>Generate an SSH key pair, install it on your server, and safely disable password authentication — with the ordering that prevents lockouts.</p>
+  <div class="meta"><span>Intermediate</span><span>15–20 min</span></div>
+</div><div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/how-to-fix-wi-fi-that-connects-but-has-no-internet-access.html">How to Fix Wi-Fi That Connects But Has No Internet Access</a></h3>
+  <p>A structured way to tell apart router, modem, DNS, and IP-address problems when Wi-Fi shows connected but nothing loads.</p>
+  <div class="meta"><span>Beginner</span><span>10–15 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

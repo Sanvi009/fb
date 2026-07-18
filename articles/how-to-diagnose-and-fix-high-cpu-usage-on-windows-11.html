@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Diagnose and Fix High CPU Usage on Windows 11 | Runbook</title>
+<meta name="description" content="A structured process for finding what's actually driving high CPU usage on Windows 11 — including causes Task Manager alone won't reveal.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-diagnose-and-fix-high-cpu-usage-on-windows-11.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Operating Systems</span>
+    <h1>How to Diagnose and Fix High CPU Usage on Windows 11</h1>
+    <p class="dek">Task Manager tells you what's using CPU, not why — or whether it's actually a problem. Here's how to tell normal background activity from a real issue.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Beginner</span></div>
+  <div><span class="k">Time</span><span class="v">15–20 min</span></div>
+  <div><span class="k">Platform</span><span class="v">Windows 11</span></div>
+  <div><span class="k">Category</span><span class="v">Operating Systems</span></div>
+</div>
+
+<article class="body">
+
+<p>Task Manager shows a live number, but a spike alone doesn't mean something's wrong — Windows regularly runs background maintenance that briefly uses a lot of CPU by design. The question that matters is whether it's <em>constant</em> and <em>unexplained</em>, and this walks through finding out which.</p>
+
+<h2><span class="num">01</span>Sort by CPU in Task Manager, then just watch for a minute</h2>
+<p>Ctrl+Shift+Esc → Processes tab → click the CPU column header to sort. If a process spikes briefly and settles (Windows Update, Windows Defender scanning, Search indexing after adding files), that's normal and not worth chasing. The problem cases are a process pinned high and staying there.</p>
+
+<h2><span class="num">02</span>Check Windows Update and Defender first — the most common false alarms</h2>
+<p>Search "Check for updates" in Start — if an update is actively downloading or installing, high CPU (usually from a process called <code>TiWorker.exe</code>) is expected and temporary. Similarly, Windows Security → a full scan running in the background is a completely normal cause of sustained CPU use for 20–60 minutes.</p>
+
+<h2><span class="num">03</span>If it's a specific app, check its actual version</h2>
+<p>Browsers with too many tabs or extensions, and outdated versions of Chrome, Discord, or Slack, are frequent culprits — often fixed by a pending update the app hasn't auto-installed yet. Check the app's own update mechanism, not just Windows Update.</p>
+
+<h2><span class="num">04</span>Rule out background startup bloat</h2>
+<p>Task Manager → Startup apps tab. Anything with "High" startup impact that you don't actually need running constantly (many apps set themselves to auto-launch during install without asking) can be disabled here without uninstalling the app.</p>
+
+<h2><span class="num">05</span>Check for a stuck or runaway process using Resource Monitor</h2>
+<p>Type "Resource Monitor" in Start for more detail than Task Manager shows, including which specific file or handle a process is stuck on. A process at a flat, unchanging high percentage (rather than fluctuating) with no clear reason is a strong sign of a genuine stuck process — safe to end via Task Manager and relaunch the app normally.</p>
+
+<h2><span class="num">06</span>Check for malware only after ruling out the above</h2>
+<p>If CPU stays high with no identifiable legitimate process, or you see unfamiliar process names, run a full scan with Windows Defender (Windows Security → Virus & threat protection → Scan options → Full scan). This is a real cause, but it's less common than the mundane ones above, so it's worth checking those first.</p>
+
+<table>
+<tr><th>Pattern</th><th>Likely cause</th></tr>
+<tr><td>Brief spike, then settles</td><td>Normal background maintenance — not a problem</td></tr>
+<tr><td>High CPU for 20–60 min occasionally</td><td>Windows Update or Defender scan</td></tr>
+<tr><td>One app consistently high</td><td>Outdated app version or too many tabs/extensions</td></tr>
+<tr><td>Flat, unchanging high % with no clear cause</td><td>Stuck process — end and relaunch</td></tr>
+<tr><td>Unfamiliar process name, persistent</td><td>Run a full malware scan</td></tr>
+</table>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Windows 11 setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-an-unsaved-word-document-after-a-crash.html">How to Recover an Unsaved Word Document After a Crash</a></h3>
+  <p>Where Word actually stores AutoRecover and temp files, and the exact folders to check when the recovery pane doesn't show your document.</p>
+  <div class="meta"><span>Beginner</span><span>5–20 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-free-up-space-on-a-mac-when-other-storage-is-huge.html">How to Free Up Space on a Mac When "Other" Storage Is Huge</a></h3>
+  <p>What macOS actually counts as System/Other storage, and the specific folders worth cleaning versus the ones you should leave alone.</p>
+  <div class="meta"><span>Beginner</span><span>15–25 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-files-from-a-corrupted-usb-drive-without-paid-software.html">How to Recover Files from a Corrupted USB Drive Without Paid Software</a></h3>
+  <p>Free, built-in tools to diagnose and recover data from a USB drive that shows as corrupted, unreadable, or asks to be formatted.</p>
+  <div class="meta"><span>Beginner</span><span>15–30 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Migrate a WordPress Site to a New Host Without Downtime | Runbook</title>
+<meta name="description" content="A step-by-step WordPress migration sequence that keeps your old site live and serving traffic until the new host is fully verified and DNS has propagated.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-migrate-a-wordpress-site-to-a-new-host-without-downtime.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Dev Tools</span>
+    <h1>How to Migrate a WordPress Site to a New Host Without Downtime</h1>
+    <p class="dek">The trick to a zero-downtime migration is that your old site keeps serving visitors right up until DNS finishes switching — here's the exact sequence.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Intermediate</span></div>
+  <div><span class="k">Time</span><span class="v">1–2 hours</span></div>
+  <div><span class="k">Platform</span><span class="v">Any host</span></div>
+  <div><span class="k">Category</span><span class="v">Dev Tools</span></div>
+</div>
+
+<article class="body">
+
+<p>The most common way WordPress migrations cause downtime is switching DNS before confirming the new host actually works. Done in the right order, visitors keep hitting your old, working site the entire time you're setting up and testing the new one — they only get switched over once everything is confirmed working.</p>
+
+<h2><span class="num">01</span>Export the database</h2>
+<p>Via phpMyAdmin on your old host, or with WP-CLI if you have shell access:</p>
+<pre><code>wp db export backup.sql</code></pre>
+
+<h2><span class="num">02</span>Copy all site files</h2>
+<p>Download the entire <code>wp-content</code> folder (themes, plugins, uploads) plus <code>wp-config.php</code> via SFTP, or use a plugin like Duplicator/All-in-One WP Migration if you don't have direct file access.</p>
+
+<h2><span class="num">03</span>Set up the new host — but don't touch DNS yet</h2>
+<ol>
+<li>Create the database on the new host and import your <code>backup.sql</code>.</li>
+<li>Upload your site files.</li>
+<li>Update <code>wp-config.php</code> with the new database name, username, password, and host.</li>
+</ol>
+
+<h2><span class="num">04</span>Test the new host using a hosts file override</h2>
+<p>This is the step that makes zero-downtime possible: point your own computer at the new server without changing DNS for anyone else.</p>
+<ul>
+<li><strong>Windows:</strong> edit <code>C:\Windows\System32\drivers\etc\hosts</code></li>
+<li><strong>macOS/Linux:</strong> edit <code>/etc/hosts</code></li>
+</ul>
+<p>Add a line: <code>[new server IP] yourdomain.com</code>. Save, flush your DNS cache (<code>ipconfig /flushdns</code> on Windows, <code>sudo dscacheutil -flushcache</code> on macOS), and visit your site. Only your computer sees the new server — everyone else still hits the old one, unaffected.</p>
+
+<h2><span class="num">05</span>Thoroughly test the new site while it's still hidden</h2>
+<p>Check every page template, contact forms, checkout flow if it's a store, image loading, and the admin dashboard. Fix anything broken now, while there's zero visitor impact.</p>
+
+<h2><span class="num">06</span>Lower your DNS TTL a day in advance</h2>
+<p>If you can, lower your DNS record's TTL (time-to-live) to 300 seconds a day before the actual switch. This makes the eventual real DNS change propagate in minutes instead of up to 48 hours.</p>
+
+<h2><span class="num">07</span>Switch DNS, then remove your hosts file override</h2>
+<p>Once you're confident, update your domain's A record to point at the new server. Remove the line you added to your hosts file — you want to see the site the same way real visitors now do, to confirm the live switch worked.</p>
+
+<div class="callout warn">
+<span class="label">Don't cancel the old host immediately</span>
+Keep the old hosting account active for at least a week after switching. DNS changes don't reach every visitor instantly — some ISPs cache DNS longer than they should, and a small percentage of traffic may still hit the old server for a few days.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Any host setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-set-up-a-reverse-proxy-with-nginx-for-a-home-server.html">How to Set Up a Reverse Proxy with Nginx for a Home Server</a></h3>
+  <p>Set up Nginx as a reverse proxy so multiple self-hosted apps on different ports are reachable through clean subdomains, with HTTPS via Certbot.</p>
+  <div class="meta"><span>Intermediate</span><span>30–40 min</span></div>
+</div><div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-schedule-a-python-script-cron-vs-task-scheduler-vs-launchd.html">How to Schedule a Python Script: Cron vs Task Scheduler vs launchd</a></h3>
+  <p>Working examples for scheduling Python scripts with cron, Windows Task Scheduler, and macOS launchd, plus the environment-variable issue that breaks most jobs.</p>
+  <div class="meta"><span>Intermediate</span><span>15–25 min</span></div>
+</div><div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-set-up-a-local-development-environment-with-docker-compose.html">How to Set Up a Local Development Environment with Docker Compose</a></h3>
+  <p>A working docker-compose.yml for a typical app + database + cache stack, plus the volume and networking details that trip people up first.</p>
+  <div class="meta"><span>Intermediate</span><span>20–30 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

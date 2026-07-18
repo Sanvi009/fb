@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Fix ERR_SSL_PROTOCOL_ERROR in Chrome Without Reinstalling | Runbook</title>
+<meta name="description" content="A step-by-step way to diagnose ERR_SSL_PROTOCOL_ERROR by isolating clock, extension, antivirus, and server causes instead of guessing.">
+<link rel="canonical" href="https://www.runbook.example/articles/err-ssl-protocol-error-chrome.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Networking</span>
+    <h1>How to Fix ERR_SSL_PROTOCOL_ERROR in Chrome Without Reinstalling</h1>
+    <p class="dek">This error is almost never Chrome's fault. Here's how to find out whether it's your clock, an extension, or the site itself — and fix each case.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Beginner</span></div>
+  <div><span class="k">Time</span><span class="v">10–15 min</span></div>
+  <div><span class="k">Platform</span><span class="v">Windows / macOS</span></div>
+  <div><span class="k">Category</span><span class="v">Networking</span></div>
+</div>
+
+<article class="body">
+
+<p>ERR_SSL_PROTOCOL_ERROR shows up when Chrome and a server can't agree on how to set up a secure connection. Most guides tell you to "clear your cache" first, which fixes almost nothing, because the cache isn't usually the problem. The actual cause is almost always one of four things: your system clock, a browser extension, security software intercepting traffic, or the site's own certificate. Working through them in this order takes a few minutes and tells you exactly which one it is, instead of randomly trying fixes.</p>
+
+<h2><span class="num">01</span>Check whether it's just one site or every site</h2>
+<p>Open two or three unrelated HTTPS sites you know work, like a bank site and a news site. If they load fine and only one site throws the error, skip to Step 4 — the problem is on that server's end, not your machine. If every HTTPS site fails, keep going.</p>
+
+<h2><span class="num">02</span>Fix your system clock</h2>
+<p>SSL certificates are only valid within a date range. If your clock is off by more than a few minutes, Chrome will refuse the handshake and often reports it as a protocol error instead of a clearer "certificate not yet valid" message.</p>
+<ul>
+<li><strong>Windows:</strong> Settings → Time &amp; Language → Date &amp; time → turn on "Set time automatically," then click Sync now.</li>
+<li><strong>macOS:</strong> System Settings → General → Date &amp; Time → enable "Set time and date automatically."</li>
+</ul>
+<p>Restart Chrome completely (not just the window — quit it from the taskbar/dock) and retest.</p>
+
+<h2><span class="num">03</span>Disable extensions one at a time</h2>
+<p>Ad blockers, "privacy" extensions, and VPN extensions are the most common software cause, because several of them intercept and rewrite HTTPS traffic.</p>
+<ol>
+<li>Go to <code>chrome://extensions</code>.</li>
+<li>Toggle every extension off.</li>
+<li>Reload the page that was failing. If it now loads, turn extensions back on one at a time, reloading after each, until you find the culprit.</li>
+</ol>
+<div class="callout">
+<span class="label">Why this works</span>
+Extensions with "all sites" permissions can inject scripts before the page finishes negotiating its connection, which Chrome sometimes reports as a protocol failure rather than an extension conflict.
+</div>
+
+<h2><span class="num">04</span>Check antivirus or "HTTPS scanning" software</h2>
+<p>Security suites like older versions of Avast, AVG, Kaspersky, and some corporate endpoint tools work by decrypting and re-encrypting HTTPS traffic to scan it — effectively a sanctioned man-in-the-middle. If their own certificate isn't installed correctly, Chrome rejects the connection.</p>
+<p>Temporarily disable "HTTPS/SSL scanning" (not the whole antivirus) in your security software's settings, then retest. If that fixes it, update the software or reinstall its root certificate rather than leaving scanning off permanently.</p>
+
+<h2><span class="num">05</span>If it's only one specific site</h2>
+<p>Try the site in an incognito window with extensions disabled. If it still fails there and on another device on a different network, the problem is on the server: an expired certificate, a misconfigured intermediate certificate chain, or the server only supporting an outdated TLS version. There's nothing to fix on your end — you can report it to the site, or wait, since this generally gets resolved by the site owner.</p>
+
+<table>
+<tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+<tr><td>Every HTTPS site fails</td><td>Clock or antivirus</td><td>Steps 2 and 4</td></tr>
+<tr><td>Fails after installing an extension</td><td>Extension conflict</td><td>Step 3</td></tr>
+<tr><td>Only one site fails, on all devices</td><td>Server certificate issue</td><td>Step 5 — not fixable client-side</td></tr>
+<tr><td>Fails only on office/school Wi-Fi</td><td>Network-level filtering</td><td>Contact network admin</td></tr>
+</table>
+
+<div class="callout warn">
+<span class="label">Skip this</span>
+Don't disable "Use secure DNS" or downgrade Chrome's minimum TLS version through flags. Both remove real protection and rarely fix this specific error.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Windows / macOS setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/how-to-set-up-ssh-key-authentication-and-disable-password-login.html">How to Set Up SSH Key Authentication and Disable Password Login</a></h3>
+  <p>Generate an SSH key pair, install it on your server, and safely disable password authentication — with the ordering that prevents lockouts.</p>
+  <div class="meta"><span>Intermediate</span><span>15–20 min</span></div>
+</div><div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/how-to-fix-wi-fi-that-connects-but-has-no-internet-access.html">How to Fix Wi-Fi That Connects But Has No Internet Access</a></h3>
+  <p>A structured way to tell apart router, modem, DNS, and IP-address problems when Wi-Fi shows connected but nothing loads.</p>
+  <div class="meta"><span>Beginner</span><span>10–15 min</span></div>
+</div><div class="card">
+  <span class="cat">Networking</span>
+  <h3><a href="../articles/how-to-fix-this-site-can-t-provide-a-secure-connection.html">How to Fix "This Site Can't Provide a Secure Connection"</a></h3>
+  <p>How to read the certificate details behind this Chrome/Edge error to find the real cause in under a minute, plus what each error code actually means.</p>
+  <div class="meta"><span>Beginner</span><span>5–10 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

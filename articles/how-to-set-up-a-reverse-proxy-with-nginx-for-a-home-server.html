@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Set Up a Reverse Proxy with Nginx for a Home Server | Runbook</title>
+<meta name="description" content="Set up Nginx as a reverse proxy so multiple self-hosted apps on different ports are reachable through clean subdomains, with HTTPS via Certbot.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-set-up-a-reverse-proxy-with-nginx-for-a-home-server.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Dev Tools</span>
+    <h1>How to Set Up a Reverse Proxy with Nginx for a Home Server</h1>
+    <p class="dek">Run several self-hosted services on one machine without juggling ports — route friendly subdomains to each one through a single Nginx entry point.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Intermediate</span></div>
+  <div><span class="k">Time</span><span class="v">30–40 min</span></div>
+  <div><span class="k">Platform</span><span class="v">Linux</span></div>
+  <div><span class="k">Category</span><span class="v">Dev Tools</span></div>
+</div>
+
+<article class="body">
+
+<p>If you're self-hosting more than one service at home — say, a media server on port 8096 and a file-sync tool on port 8384 — remembering ports gets old fast, and none of them get HTTPS by default. A reverse proxy solves both: it sits in front of everything on ports 80/443, and routes requests to the right internal service based on subdomain.</p>
+
+<h2><span class="num">01</span>Install Nginx</h2>
+<pre><code>sudo apt update
+sudo apt install nginx</code></pre>
+<p>Confirm it's running by visiting your server's IP in a browser — you should see the default Nginx welcome page.</p>
+
+<h2><span class="num">02</span>Point your domains at your server</h2>
+<p>In your DNS provider's dashboard, create A records for each subdomain pointing at your server's public IP, for example <code>media.yourdomain.com</code> and <code>files.yourdomain.com</code>. If this is purely for a home network without a public domain, you can instead edit each client's <code>hosts</code> file, or run a local DNS resolver like Pi-hole with custom entries.</p>
+
+<h2><span class="num">03</span>Create a server block per service</h2>
+<p>Each service gets its own config file. For the media server example:</p>
+<pre><code>sudo nano /etc/nginx/sites-available/media.yourdomain.com</code></pre>
+<pre><code>server {
+    listen 80;
+    server_name media.yourdomain.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8096;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}</code></pre>
+<p>Enable it and repeat for each additional service with its own file and port:</p>
+<pre><code>sudo ln -s /etc/nginx/sites-available/media.yourdomain.com /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx</code></pre>
+
+<h2><span class="num">04</span>Add free HTTPS with Certbot</h2>
+<pre><code>sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d media.yourdomain.com -d files.yourdomain.com</code></pre>
+<p>Certbot edits your Nginx configs automatically to add certificates and redirect HTTP to HTTPS, and sets up auto-renewal via a systemd timer — you shouldn't need to touch it again.</p>
+
+<h2><span class="num">05</span>Forward the right ports on your router</h2>
+<p>Only ports 80 and 443 need to be forwarded to your server's local IP — not the individual service ports. This is the actual point of the reverse proxy: everything external only ever talks to Nginx.</p>
+
+<div class="callout">
+<span class="label">Why this is safer than port-forwarding each service directly</span>
+Every additional forwarded port is a separate attack surface. Funneling everything through Nginx means you only have one thing (Nginx itself, plus whatever auth each app provides) facing the internet, and you can add rate limiting or IP allowlists in one place.
+</div>
+
+<div class="callout warn">
+<span class="label">Common mistake</span>
+Forgetting <code>proxy_set_header Host $host;</code> causes apps that check the Host header (many do, for security) to reject requests or redirect incorrectly. If a proxied app behaves strangely, check this line first.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Linux setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-schedule-a-python-script-cron-vs-task-scheduler-vs-launchd.html">How to Schedule a Python Script: Cron vs Task Scheduler vs launchd</a></h3>
+  <p>Working examples for scheduling Python scripts with cron, Windows Task Scheduler, and macOS launchd, plus the environment-variable issue that breaks most jobs.</p>
+  <div class="meta"><span>Intermediate</span><span>15–25 min</span></div>
+</div><div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-migrate-a-wordpress-site-to-a-new-host-without-downtime.html">How to Migrate a WordPress Site to a New Host Without Downtime</a></h3>
+  <p>A step-by-step WordPress migration sequence that keeps your old site live and serving traffic until the new host is fully verified and DNS has propagated.</p>
+  <div class="meta"><span>Intermediate</span><span>1–2 hours</span></div>
+</div><div class="card">
+  <span class="cat">Dev Tools</span>
+  <h3><a href="../articles/how-to-set-up-a-local-development-environment-with-docker-compose.html">How to Set Up a Local Development Environment with Docker Compose</a></h3>
+  <p>A working docker-compose.yml for a typical app + database + cache stack, plus the volume and networking details that trip people up first.</p>
+  <div class="meta"><span>Intermediate</span><span>20–30 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

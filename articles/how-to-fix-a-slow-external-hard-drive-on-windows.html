@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Fix a Slow External Hard Drive on Windows | Runbook</title>
+<meta name="description" content="The USB mode, power policy, and file-system settings that commonly throttle external hard drive speed on Windows, checked in order of likely impact.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-fix-a-slow-external-hard-drive-on-windows.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Operating Systems</span>
+    <h1>How to Fix a Slow External Hard Drive on Windows</h1>
+    <p class="dek">Before assuming the drive is failing, check the three settings Windows silently misconfigures for external drives — each one alone can cut speeds by more than half.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Beginner</span></div>
+  <div><span class="k">Time</span><span class="v">10–15 min</span></div>
+  <div><span class="k">Platform</span><span class="v">Windows</span></div>
+  <div><span class="k">Category</span><span class="v">Operating Systems</span></div>
+</div>
+
+<article class="body">
+
+<p>A noticeably slow external drive is often not a failing drive at all — it's a configuration issue Windows introduces silently, especially after a Windows update resets driver settings. Check these before spending money on a replacement.</p>
+
+<h2><span class="num">01</span>Confirm it's actually running at USB 3.0/3.1 speeds</h2>
+<p>A USB 3.0 drive plugged into a USB 2.0 port (often color-coded black instead of blue, or on a rear panel port without a matching controller) will run at USB 2.0 speeds — roughly a tenth of USB 3.0's throughput. Check Device Manager → Universal Serial Bus controllers, and confirm the drive is listed under a "USB 3.0/3.1 eXtensible Host Controller" entry, not just a generic USB Hub.</p>
+
+<h2><span class="num">02</span>Check the drive's power management settings</h2>
+<p>Windows aggressively power-manages USB devices to save battery on laptops, and this can throttle external drives even when plugged into a desktop.</p>
+<ol>
+<li>Device Manager → find the drive under "Disk drives."</li>
+<li>Right-click → Properties → Power Management tab.</li>
+<li>Uncheck "Allow the computer to turn off this device to save power."</li>
+</ol>
+
+<h2><span class="num">03</span>Check the write-caching policy</h2>
+<p>Windows defaults some external drives to "Quick Removal" mode, which disables write caching for safety (so you can unplug without ejecting) at a real cost to speed.</p>
+<ol>
+<li>Device Manager → the drive → Properties → Policies tab.</li>
+<li>Switch from "Quick removal" to "Better performance," which enables write caching.</li>
+<li>If you choose this, always use "Safely Remove Hardware" before unplugging — that's the tradeoff.</li>
+</ol>
+
+<h2><span class="num">04</span>Rule out the file system itself</h2>
+<p>exFAT and FAT32 have less write overhead than NTFS in some workloads but far worse handling of many small files; NTFS is the opposite. If you're moving thousands of small files, that alone can look like "the drive is slow" when it's actually file-system overhead. This isn't usually worth reformatting for unless you understand the tradeoffs (FAT32 also caps individual file size at 4GB).</p>
+
+<h2><span class="num">05</span>Check actual drive health if the above didn't help</h2>
+<p>Run <code>wmic diskdrive get status</code> in Command Prompt, or use the free CrystalDiskInfo tool for a full SMART health report. A drive reporting SMART warnings, not just slowness, is a genuine hardware concern and worth backing up immediately rather than continuing to troubleshoot speed.</p>
+
+<table>
+<tr><th>Setting</th><th>Typical speed impact</th></tr>
+<tr><td>USB 2.0 port instead of 3.0</td><td>Up to 10x slower</td></tr>
+<tr><td>Quick Removal instead of Better Performance</td><td>Significant on write-heavy tasks</td></tr>
+<tr><td>Power management throttling</td><td>Intermittent slowdowns / drive dropping out</td></tr>
+</table>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live Windows setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-an-unsaved-word-document-after-a-crash.html">How to Recover an Unsaved Word Document After a Crash</a></h3>
+  <p>Where Word actually stores AutoRecover and temp files, and the exact folders to check when the recovery pane doesn't show your document.</p>
+  <div class="meta"><span>Beginner</span><span>5–20 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-free-up-space-on-a-mac-when-other-storage-is-huge.html">How to Free Up Space on a Mac When "Other" Storage Is Huge</a></h3>
+  <p>What macOS actually counts as System/Other storage, and the specific folders worth cleaning versus the ones you should leave alone.</p>
+  <div class="meta"><span>Beginner</span><span>15–25 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-files-from-a-corrupted-usb-drive-without-paid-software.html">How to Recover Files from a Corrupted USB Drive Without Paid Software</a></h3>
+  <p>Free, built-in tools to diagnose and recover data from a USB drive that shows as corrupted, unreadable, or asks to be formatted.</p>
+  <div class="meta"><span>Beginner</span><span>15–30 min</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>

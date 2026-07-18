@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Free Up Space on a Mac When "Other" Storage Is Huge | Runbook</title>
+<meta name="description" content="What macOS actually counts as System/Other storage, and the specific folders worth cleaning versus the ones you should leave alone.">
+<link rel="canonical" href="https://www.runbook.example/articles/how-to-free-up-space-on-a-mac-when-other-storage-is-huge.html">
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="../index.html"><span class="mark">RB</span>Runbook</a>
+    <nav class="main"><a href="../index.html">Home</a>
+<a href="../index.html#guides">Guides</a>
+<a href="../about.html">About</a>
+<a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+
+<div class="article-hero">
+  <div class="wrap-narrow">
+    <span class="cat">Operating Systems</span>
+    <h1>How to Free Up Space on a Mac When "Other" Storage Is Huge</h1>
+    <p class="dek">macOS lumps caches, app support files, and disk images into a vague "Other" category. Here's how to see what's actually in it and clear it safely.</p>
+  </div>
+</div>
+
+<div class="spec-plate">
+  <div><span class="k">Difficulty</span><span class="v">Beginner</span></div>
+  <div><span class="k">Time</span><span class="v">15–25 min</span></div>
+  <div><span class="k">Platform</span><span class="v">macOS</span></div>
+  <div><span class="k">Category</span><span class="v">Operating Systems</span></div>
+</div>
+
+<article class="body">
+
+<p>Apple's storage breakdown (Settings → General → Storage) shows a category called "System Data" or "Other" that can balloon to 50–100GB with no clear explanation. It isn't one thing — it's a catch-all for caches, logs, iOS device backups, disk images, and application support files that don't fit Apple's other categories. Deleting the wrong thing here can break apps, so go in this order.</p>
+
+<h2><span class="num">01</span>Start with the safest, biggest wins: caches</h2>
+<p>Caches regenerate automatically, so clearing them is low-risk.</p>
+<ol>
+<li>Open Finder, press <code>Cmd+Shift+G</code>, and go to <code>~/Library/Caches</code>.</li>
+<li>Sort by size. Anything belonging to apps you don't use daily can be deleted safely — the app will just rebuild what it needs.</li>
+<li>Leave folders for apps you use right now (like your browser) alone unless space is critical; deleting them won't break anything, but you'll lose logged-in sessions and speed until they rebuild.</li>
+</ol>
+
+<h2><span class="num">02</span>Check for old iOS backups</h2>
+<p>If you've ever backed up an iPhone or iPad to this Mac via Finder, those backups can be 10–40GB each and are easy to forget about.</p>
+<p>Finder → iPhone device page (when connected) → Manage Backups, or check <code>~/Library/Application Support/MobileSync/Backup</code> directly. Delete backups for devices you no longer own or have replaced.</p>
+
+<h2><span class="num">03</span>Find oversized disk images and installers</h2>
+<p>Downloaded <code>.dmg</code> installers and old virtual machine images are a frequent hidden cause.</p>
+<pre><code>find ~/Downloads -name "*.dmg" -size +500M</code></pre>
+<p>Run this in Terminal to list any installer over 500MB sitting in Downloads — these are safe to delete once you've installed the app.</p>
+
+<h2><span class="num">04</span>Check Application Support for old, uninstalled apps</h2>
+<p>Uninstalling an app on macOS by dragging it to the Trash does <em>not</em> remove its support files.</p>
+<pre><code>ls -lhS ~/Library/Application\ Support | head -20</code></pre>
+<p>This lists the largest folders in Application Support. If you see a folder for an app you uninstalled months ago, it's safe to delete that specific folder.</p>
+
+<h2><span class="num">05</span>Use the built-in Storage Management tool for a full picture</h2>
+<p>Settings → General → Storage → the small "i" button next to System Data (or the "Manage" button on older macOS) gives a categorized breakdown that's more accurate than Spotlight-based third-party cleaners.</p>
+
+<div class="callout warn">
+<span class="label">Don't do this</span>
+Avoid third-party "Mac cleaner" apps that promise to auto-clean System Data — several are subscription traps, and a few have been flagged for bundling adware. Everything above can be done with tools already on your Mac.
+</div>
+
+</article>
+
+<div class="byline">
+  <div class="avatar">JM</div>
+  <div class="who">
+    <b>Written by Jordan Malik</b>
+    <span>Senior Editor, Systems & Networking &mdash; guide tested on a live macOS setup before publishing</span>
+  </div>
+</div>
+<div class="updated-strip">Last verified: July 2026</div>
+
+<section class="related">
+  <div class="wrap">
+    <div class="section-head"><h2>Related guides</h2></div>
+    <div class="grid">
+      <div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-an-unsaved-word-document-after-a-crash.html">How to Recover an Unsaved Word Document After a Crash</a></h3>
+  <p>Where Word actually stores AutoRecover and temp files, and the exact folders to check when the recovery pane doesn't show your document.</p>
+  <div class="meta"><span>Beginner</span><span>5–20 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-recover-files-from-a-corrupted-usb-drive-without-paid-software.html">How to Recover Files from a Corrupted USB Drive Without Paid Software</a></h3>
+  <p>Free, built-in tools to diagnose and recover data from a USB drive that shows as corrupted, unreadable, or asks to be formatted.</p>
+  <div class="meta"><span>Beginner</span><span>15–30 min</span></div>
+</div><div class="card">
+  <span class="cat">Operating Systems</span>
+  <h3><a href="../articles/how-to-set-up-two-factor-authentication-without-locking-yourself-out.html">How to Set Up Two-Factor Authentication Without Locking Yourself Out</a></h3>
+  <p>The correct setup order for two-factor authentication, why authenticator apps beat SMS, and where to actually store backup codes.</p>
+  <div class="meta"><span>Beginner</span><span>10 min per account</span></div>
+</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap cols">
+    <div>
+      <div class="brand"><span class="mark" style="color:#fff;border-color:#fff;">RB</span>Runbook</div>
+      <p class="about">Plain-English fixes for real tech problems. Every guide is written and manually tested by our own editors before publishing — no scraped or spun content.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../index.html">Home</a>
+      <a href="../index.html#guides">All guides</a>
+      <a href="../about.html">About us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="../privacy-policy.html">Privacy Policy</a>
+      <a href="../terms.html">Terms of Use</a>
+      <a href="../contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../index.html#guides">Networking</a>
+      <a href="../index.html#guides">Operating Systems</a>
+      <a href="../index.html#guides">Dev Tools</a>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    &copy; 2026 Runbook. All guides are provided as-is; always back up your data before making system changes.
+  </div>
+</footer>
+</body>
+</html>
